@@ -218,7 +218,7 @@ int instructions(int which)
 int main()
 {
 
-	instructions(2);
+	instructions(0);
 	// PCode Machine:
 	Instruction i;
 	{
