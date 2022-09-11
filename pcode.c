@@ -218,6 +218,9 @@ int instructions(int which)
 int main()
 {
 
+	// 0: Sums two numbers
+	// 1: Sums all numbers between 0 and 10
+	// 2: Sums all numbers between 0 and 100 (iterative)
 	instructions(0);
 	// PCode Machine:
 	Instruction i;
