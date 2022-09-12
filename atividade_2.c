@@ -42,7 +42,7 @@ void question(int which)
 			{
 			// main(void)
 				code[index].f = INT; code[index++].a = 5;   // Allocates memory
-				code[index].f = LIT; code[index++].a = 6;   // Starts paramater fat(value)
+				code[index].f = LIT; code[index++].a = 4;   // Starts paramater fat(value)
 				code[index].f = STO; code[index++].a = 9;   // Pass as Parameter fat(value)
 				code[index].f = CAL; code[index++].a = 6;   // Calls function
 				code[index].f = LOD; code[index++].a = 10;  // Result
@@ -69,7 +69,7 @@ void question(int which)
 				// Check if its equal to Value
 				code[index].f = LOD; code[index++].a = 3;  	// Load Counter
 				code[index].f = LOD; code[index++].a = 4;  	// Load Value
-				code[index].f = OPR; code[index++].a = 10; 	// Less Than
+				code[index].f = OPR; code[index++].a = 9; 	// Less Than
 				code[index].f = JPC; code[index++].a = 23; 	// Leaves loop
 				// End of check
 
