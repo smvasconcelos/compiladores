@@ -268,6 +268,6 @@ void pop()
 
 void print_state(int state, char token)
 {
-	printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t Word: %s\n", STEP, state,token, STACK, PI, WORD);
+	printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t Word: %s", STEP, state,token, STACK, PI, WORD);
 	PI = 0;
 }
