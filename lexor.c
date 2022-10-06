@@ -26,17 +26,17 @@
 * p23: C -> f(E){ C; }
 * p24: C -> o(E; E; E){ C; }
 */
-#define STACKSIZE 500 // Size of stack
+#define STACKSIZE 100 // Size of stack
 
 char * WORD = NULL;
-int WORD_LEN = 500;
+int WORD_LEN = 100;
 int TOKEN_POS = 0;
 // Top of stack
 int TOP = -1;
 // Step of the machine
 int STEP = 0;
 // Production id
-short int  PI = 0;
+short int PI = 0;
 // Stack
 char STACK[STACKSIZE];
 // File pointer
@@ -71,18 +71,19 @@ int main (int argc, char *argv[ ])
 			push('S'); print_state(0, '-'); goto q1;
 		// Reading state
 		q1:
-			 PI = 0;
 			STEP++;
 			token = WORD[TOKEN_POS];
 
-			if(token == EOF || token == '\n')
+			if(token == EOF || token == '\n'){
+				print_state(1, '\0');
 				goto fim;
+			}
 
-			if(consume_extras(token)){print_state(1, token); goto q1;}
-			else if(p1_p6(token)) {print_state(1, token); goto q1;}
-			else if(p5_p11(token)) {print_state(1, token); goto q1;}
-			else if(p12_p15(token)) {print_state(1, token); goto q1;}
-			else if(p16_p24(token)) {print_state(1, token); goto q1;}
+			if(consume_extras(token)){goto q1;}
+			else if(p1_p6(token)) {goto q1;}
+			else if(p5_p11(token)) {goto q1;}
+			else if(p12_p15(token)) {goto q1;}
+			else if(p16_p24(token)) {goto q1;}
 			else goto fim;
 
 
@@ -90,8 +91,12 @@ int main (int argc, char *argv[ ])
 			fclose(file);
 			if(TOP == -1)
 				puts("\n A palavra foi consumida totalmente.");
-			else
+			else{
+				puts("*****************************************************************************************************************");
+				print_state(-1, token);
+				puts("*****************************************************************************************************************");
 				puts("\n A palavra não pode ser consumida.");
+			}
 
 	}else{
 		puts("Insira um nome de arquivo válido");
@@ -112,36 +117,36 @@ int p1_p6(char token){
 
 	// Empilha a produção responsável por cada função
 	if(token == 'm' && STACK[TOP] == 'S'){
-		 PI = 1; pop(); push('M'); return 1;
+		 PI = 1; print_state(1, token);  pop(); push('M'); return 1;
 	}
 	else if(token == 'g' && STACK[TOP] == 'S'){
-		 PI = 2; pop(); push('G'); return 1;
+		 PI = 2; print_state(1, token);  pop(); push('G'); return 1;
 	}
 	else if(token == 'f' && STACK[TOP] == 'S'){
-		 PI = 3; pop(); push('F'); return 1;
+		 PI = 3; print_state(1, token);  pop(); push('F'); return 1;
 	}
 
 	// Consome a produção responsável por cada função
 	if(token == 'm' && STACK[TOP] == 'M')
 	{
-  	 PI = 4; pop(); push('}'); push(';'); push(')'); push('E'); push('('); push('r'); push(';'); push('C'); push('{'); push(')'); push('('); push('m');
+  	 PI = 4; print_state(1, token);  pop(); push('}'); push(';'); push(')'); push('E'); push('('); push('r'); push(';'); push('C'); push('{'); push(')'); push('('); push('m');
 		return 1;
 	}
 	else if(token == 'g' && STACK[TOP] == 'G')
 	{
-		 PI = 5; pop(); push('}'); push(';'); push(')'); push('E'); push('('); push('r'); push(';'); push('C'); push('{'); push(')'); push('('); push('g');
+		 PI = 5; print_state(1, token);  pop(); push('}'); push(';'); push(')'); push('E'); push('('); push('r'); push(';'); push('C'); push('{'); push(')'); push('('); push('g');
 		return 1;
 	}
 	else if(token == 'f' && STACK[TOP] == 'F'){
-		 PI = 6; pop(); push('}'); push(';'); push(')'); push('E'); push('('); push('r'); push(';'); push('C'); push('{'); push(')'); push('('); push('f');
+		 PI = 6; print_state(1, token);  pop(); push('}'); push(';'); push(')'); push('E'); push('('); push('r'); push(';'); push('C'); push('{'); push(')'); push('('); push('f');
 		return 1;
 	}
 
 	// Consome os nomes das funções das funções
-	if(token == 'f' && STACK[TOP] == 'f'){ pop(); TOKEN_POS++; return 1;}
-	else if(token == 'm' && STACK[TOP] == 'm'){ pop(); TOKEN_POS++; return 1;}
-	else if(token == 'g' && STACK[TOP] == 'g'){ pop(); TOKEN_POS++; return 1;}
-	else if(token == 'r' && STACK[TOP] == 'r'){ pop(); TOKEN_POS++; return 1;}
+	if(token == 'f' && STACK[TOP] == 'f'){print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'm' && STACK[TOP] == 'm'){print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'g' && STACK[TOP] == 'g'){print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'r' && STACK[TOP] == 'r'){print_state(1, token);  pop(); TOKEN_POS++; return 1;}
 
 	return 0;
 }
@@ -158,16 +163,16 @@ int p5_p11(char token)
 
 
 		// Empilha
-		if(token == '0' && STACK[TOP] == 'E') { PI = 7; pop(); push('0'); return 1;}
-		else if(token == '1' && STACK[TOP] == 'E') { PI = 8; pop(); push('1'); return 1;}
-		else if(token == 'x' && STACK[TOP] == 'E') { PI = 9; pop(); push('x'); return 1;}
-		else if(token == 'y' && STACK[TOP] == 'E') { PI = 10; pop(); push('y'); return 1;}
-		else if((token == '(' && STACK[TOP] == 'E')) { PI = 11; pop(); push(')'); push('E'); push('X'); push('E'); push('('); return 1;}
+		if(token == '0' && STACK[TOP] == 'E') { PI = 7; print_state(1, token);  pop(); push('0'); return 1;}
+		else if(token == '1' && STACK[TOP] == 'E') { PI = 8; print_state(1, token);  pop(); push('1'); return 1;}
+		else if(token == 'x' && STACK[TOP] == 'E') { PI = 9; print_state(1, token);  pop(); push('x'); return 1;}
+		else if(token == 'y' && STACK[TOP] == 'E') { PI = 10; print_state(1, token);  pop(); push('y'); return 1;}
+		else if((token == '(' && STACK[TOP] == 'E')) { PI = 11; print_state(1, token);  pop(); push(')'); push('E'); push('X'); push('E'); push('('); return 1;}
 		// Consume
-		else if(token == '0' && STACK[TOP] == '0') { pop(); TOKEN_POS++; return 1;}
-		else if(token == '1' && STACK[TOP] == '1') { pop(); TOKEN_POS++; return 1;}
-		else if(token == 'x' && STACK[TOP] == 'x') { pop(); TOKEN_POS++; return 1;}
-		else if(token == 'y' && STACK[TOP] == 'y') { pop(); TOKEN_POS++; return 1;}
+		else if(token == '0' && STACK[TOP] == '0') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+		else if(token == '1' && STACK[TOP] == '1') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+		else if(token == 'x' && STACK[TOP] == 'x') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+		else if(token == 'y' && STACK[TOP] == 'y') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
 		return 0;
 }
 
@@ -180,15 +185,15 @@ int p12_p15(char token)
 		! p15: X -> /
 		*/
 		// Empilha
-		if(token == '+' && STACK[TOP] == 'X') { PI = 12; pop(); push('+'); return 1;}
-		else if(token == '-' && STACK[TOP] == 'X') { PI = 13; pop(); push('-'); return 1;}
-		else if(token == '*' && STACK[TOP] == 'X') { PI = 14; pop(); push('*'); return 1;}
-		else if(token == '/' && STACK[TOP] == 'X') { PI = 15; pop(); push('/'); return 1;}
+		if(token == '+' && STACK[TOP] == 'X') { PI = 12; print_state(1, token); pop(); push('+'); return 1;}
+		else if(token == '-' && STACK[TOP] == 'X') { PI = 13; print_state(1, token); pop(); push('-'); return 1;}
+		else if(token == '*' && STACK[TOP] == 'X') { PI = 14; print_state(1, token); pop(); push('*'); return 1;}
+		else if(token == '/' && STACK[TOP] == 'X') { PI = 15; print_state(1, token); pop(); push('/'); return 1;}
 		// Consome
-		else if(token == '+' && STACK[TOP] == '+') { pop(); TOKEN_POS++; return 1;}
-		else if(token == '-' && STACK[TOP] == '-') { pop(); TOKEN_POS++; return 1;}
-		else if(token == '*' && STACK[TOP] == '*') { pop(); TOKEN_POS++; return 1;}
-		else if(token == '/' && STACK[TOP] == '/') { pop(); TOKEN_POS++; return 1;}
+		else if(token == '+' && STACK[TOP] == '+') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+		else if(token == '-' && STACK[TOP] == '-') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+		else if(token == '*' && STACK[TOP] == '*') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+		else if(token == '/' && STACK[TOP] == '/') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
 		return 0;
 }
 
@@ -214,18 +219,18 @@ int p16_p24(char token)
 	else if(token == 'z' && STACK[TOP] == 'C') { PI = 20; pop(); push('E');  push('='); push('z'); return 1;}
 	// p21-p24
 	else if(token == '(' && STACK[TOP] == 'C') { PI = 21; pop(); push(')');  push('E'); push('X'); push('E'); push('('); return 1;}
-	else if(token == 'w' && STACK[TOP] == 'C') { PI = 22; pop(); push('}'); push(';'); push('C'); push('{'); push('E'); push('('); push('w'); return 1;}
-	else if(token == 'f' && STACK[TOP] == 'C') { PI = 23; pop(); push('}'); push(';'); push('C'); push('{'); push('E'); push('('); push('f'); return 1;}
+	else if(token == 'w' && STACK[TOP] == 'C') { PI = 22; pop(); push('}'); push(';'); push('C'); push('{'); push(')'); push('E'); push('('); push('w'); return 1;}
+	else if(token == 'f' && STACK[TOP] == 'C') { PI = 23; pop(); push('}'); push(';'); push('C'); push('{'); push(')'); push('E'); push('('); push('f'); return 1;}
 	else if(token == 'o' && STACK[TOP] == 'C') { PI = 24; pop(); push('}'); push(';'); push('C'); push('{'); push(')'); push('E'); push(';'); push('E'); push(';'); push('E'); push('('); push('o'); return 1;}
 	// Consome
-	else if(token == 'w' && STACK[TOP] == 'w') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'o' && STACK[TOP] == 'o') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'f' && STACK[TOP] == 'f') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'h' && STACK[TOP] == 'h') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'j' && STACK[TOP] == 'j') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'i' && STACK[TOP] == 'i') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'k' && STACK[TOP] == 'k') { pop(); TOKEN_POS++; return 1;}
-	else if(token == 'z' && STACK[TOP] == 'z') { pop(); TOKEN_POS++; return 1;}
+	else if(token == 'w' && STACK[TOP] == 'w') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'o' && STACK[TOP] == 'o') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'f' && STACK[TOP] == 'f') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'h' && STACK[TOP] == 'h') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'j' && STACK[TOP] == 'j') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'i' && STACK[TOP] == 'i') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'k' && STACK[TOP] == 'k') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
+	else if(token == 'z' && STACK[TOP] == 'z') {print_state(1, token);  pop(); TOKEN_POS++; return 1;}
 	return 0;
 }
 
@@ -239,13 +244,14 @@ int consume_extras(char token)
 		! ;
 		! =
 	*/
-	if(token == '(' && STACK[TOP] == '(') { TOKEN_POS++; pop(); return 1;}
-	else if(token == ')' && STACK[TOP] == ')') { TOKEN_POS++; pop(); return 1;}
-	else if(token == '{' && STACK[TOP] == '{') { TOKEN_POS++; pop(); return 1;}
-	else if(token == '}' && STACK[TOP] == '}') { TOKEN_POS++; pop(); return 1;}
-	else if(token == 'r' && STACK[TOP] == 'r') { TOKEN_POS++; pop(); return 1;}
-	else if(token == '=' && STACK[TOP] == '=') { TOKEN_POS++; pop(); return 1;}
-	else if(token == ';' && STACK[TOP] == ';') { TOKEN_POS++; pop(); return 1;}
+
+	if(token == '(' && STACK[TOP] == '(') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
+	else if(token == ')' && STACK[TOP] == ')') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
+	else if(token == '{' && STACK[TOP] == '{') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
+	else if(token == '}' && STACK[TOP] == '}') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
+	else if(token == 'r' && STACK[TOP] == 'r') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
+	else if(token == '=' && STACK[TOP] == '=') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
+	else if(token == ';' && STACK[TOP] == ';') { 	print_state(1, token);  TOKEN_POS++; pop(); return 1;}
 
 	return 0;
 }
@@ -262,5 +268,6 @@ void pop()
 
 void print_state(int state, char token)
 {
-	printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t TOP: %2d\n", STEP, state,token, STACK, PI, TOP);
+	printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t Word: %s\n", STEP, state,token, STACK, PI, WORD);
+	PI = 0;
 }
