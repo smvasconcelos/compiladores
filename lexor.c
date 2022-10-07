@@ -115,8 +115,6 @@ void print_state(int, char);
 
 
 /*
- * Um pi com número p0 indica que o char no topo da pilha e o que está sendo lido, irá ser consumido
- * ou seja, representa uma transição x.
  * Para executar o programa é necessário passar o nome do arquivo pelo argv saida.exe input.txt
  * no arquivo presente existem várias palavras, somente a primeira linha será lida.
 */
