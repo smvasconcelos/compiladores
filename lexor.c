@@ -1,5 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
+#define MAX_TREE_SIZE 10000
 /*
 * Produções
 * p1: S → M
@@ -80,6 +81,10 @@
 */
 #define STACKSIZE 100 // Size of stack
 
+char TREE[MAX_TREE_SIZE] = {'\0'};
+int TREE_N = 0;
+int TREE_MAX_SIZE = 12;
+
 char * WORD = NULL;
 int WORD_LEN = 100;
 int TOKEN_POS = 0;
@@ -112,13 +117,17 @@ int p16_p24(char);
 int consume_extras(char);
 // Printa o estado da executação
 void print_state(int, char);
+// Preenche a arvore de análise
+void set_tree_state(char*);
+// Transforma a arvore em uma string para ser aplicada em : http://mshang.ca/syntree/
+void parse_tree();
 
 
 /*
  * Para executar o programa é necessário passar o nome do arquivo pelo argv saida.exe input.txt
  * no arquivo presente existem várias palavras, somente a primeira linha será lida.
 */
-int main (int argc, char *argv[ ])
+int main (int argc, char *argv[])
 {
 	char token;
 	file = fopen(argv[1], "r");
@@ -164,7 +173,8 @@ int main (int argc, char *argv[ ])
 	return 0;
 }
 
-int p1_p6(char token){
+int p1_p6(char token)
+{
 	/*
 	! p1: S → M
 	! p2: S -> G M
@@ -345,4 +355,18 @@ void show()
 	{
 		printf("Index: %1d \t Stack: %1c\n", i, STACK[i]);
 	}
+}
+
+void set_tree_state(char * word)
+{
+	// Sets tree state
+	for(int i = 1; i <= TREE_MAX_SIZE; i++ )
+	{
+		TREE[2*TREE_N + i] = word[i - 1];
+	}
+}
+
+void parse_tree()
+{
+	// Parse the tree
 }
