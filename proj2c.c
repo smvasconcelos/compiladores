@@ -144,6 +144,7 @@ void prod_pop();
 void show_tree();
 void update_prods(int);
 void record_tree();
+void generate_compact_tree();
 
 /*
  * Para executar o programa é necessário passar o nome do arquivo pelo argv saida.exe input.txt
@@ -199,6 +200,7 @@ int main(int argc, char *argv[])
       puts("\n A palavra foi consumida totalmente.");
       show_tree();
       record_tree();
+      generate_compact_tree();
     }
     else
     {
@@ -916,4 +918,9 @@ void record_tree()
     fprintf(output, "%c, %d \n", TREE[i].value, TREE[i].id);
   }
   fclose(output);
+}
+
+void generate_compact_tree()
+{
+  
 }
