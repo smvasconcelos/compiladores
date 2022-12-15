@@ -154,7 +154,7 @@ int main(int argc, char *argv[])
   char token;
   file = fopen(argv[1], "r");
   fgets(WORD, WORD_LEN, file);
-  // strcpy(WORD, "m(){(y/y);r(y);}\n");
+  // strcpy(WORD, "m(){f((1+1)){h=0;};r(1);}\n");
 
   if (file)
   {
@@ -173,7 +173,7 @@ int main(int argc, char *argv[])
     token = WORD[TOKEN_POS];
     if (token == EOF || token == '\n')
     {
-      print_state(1, '\0');
+      // print_state(1, '\0');
       goto fim;
     }
 
@@ -197,6 +197,7 @@ int main(int argc, char *argv[])
     if (TOP == -1)
     {
       puts("\n A palavra foi consumida totalmente.");
+      TREE[TREE_N - 1].id = 12 * PROD_STACK[2] + 1;
       show_tree();
       record_tree();
     }
@@ -221,8 +222,8 @@ int p1_p6(char token)
   /*
   ! p1: S → M
   ! p2: S -> G M
-  ! p3: S -> F G M
-  ! p4: F → f(){ C; r(E); }
+  ! p3: S -> N G M
+  ! p4: N → n(){ C; r(E); }
   ! p5: G → g(){ C; r(E); }
   ! p6: M → m(){ C; r(E); }
   */
@@ -839,14 +840,14 @@ void pop()
 
 void print_state(int state, char token)
 {
-  if (PI == 0 && TI == 0)
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
-  else if (PI == 0 && TI > 0)
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
-  else if (TI == 0 && PI > 0)
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
-  else
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
+  // if (PI == 0 && TI == 0)
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
+  // else if (PI == 0 && TI > 0)
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
+  // else if (TI == 0 && PI > 0)
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
+  // else
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
 
   PI = 0;
   TI = 0;
@@ -864,11 +865,13 @@ void set_tree_state(char *word)
 {
   int local_stack[20];
   int index = PROD_STACK[PROD_INDEX];
-  prod_pop();
   int i = 0;
 
+  prod_pop();
   for (i; word[i] != '\0'; i++)
   {
+    fflush(stdout);
+    setbuf(stdout, NULL);
     TREE[TREE_N].value = word[i];
     TREE[TREE_N++].id = 12 * index + i + 1;
     if (isupper(word[i]))
@@ -878,7 +881,9 @@ void set_tree_state(char *word)
   }
 
   if (word[1] == '\0')
+  {
     return;
+  }
 
   for (i; i >= 0; i--)
   {
@@ -896,7 +901,7 @@ void prod_push(int val)
 
 void prod_pop()
 {
-  PROD_STACK[PROD_INDEX--] = 0;
+  PROD_STACK[PROD_INDEX--] = -1;
 }
 
 void show_tree()
@@ -912,8 +917,6 @@ void record_tree()
   FILE *output = fopen("tree.txt", "w+");
   for (int i = 0; i < TREE_N; i++)
   {
-    fflush(stdout);
-    setbuf(stdout, NULL);
     fprintf(output, "%c, %d \n", TREE[i].value, TREE[i].id);
   }
   fclose(output);
