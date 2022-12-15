@@ -1,6 +1,5 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <stdbool.h>
 #include <ctype.h>
 #include <string.h>
 
@@ -18,19 +17,27 @@ typedef struct Node
 {
   // The data stored in the node
   char data;
-
   // The id stored in the node
   int id;
-
   // An array of pointers to the child nodes
   struct Node *children[MAX_CHILDREN];
-
   // The number of children that the node has
   int num_children;
-
   // Pos order validator
   int posorder;
 } Node;
+
+typedef struct NodeBinary
+{
+  // The data stored in the node
+  char data;
+  // The id stored in the node
+  int id;
+  // An array of pointers to the child nodes
+  struct NodeBinary *right;
+  struct NodeBinary *left;
+
+} NodeBinary;
 
 // Recursive function to print all values in an n-ary tree
 void print_nary_tree(Node *root)
@@ -121,6 +128,7 @@ void generate_rpn(Node *node)
   }
 }
 
+// Converrts a saved file ast to an array
 void file_to_ast_array(parse_tree_element *tree)
 {
   int id;
@@ -139,6 +147,7 @@ void file_to_ast_array(parse_tree_element *tree)
   }
 }
 
+// Gets the position of a given id in the array
 int get_item_pos(parse_tree_element *tree, int id)
 {
   for (int index = 0; tree[index].value != '\0'; index++)
@@ -149,6 +158,24 @@ int get_item_pos(parse_tree_element *tree, int id)
   return -1;
 }
 
+// Checks if the item is an extra char
+int is_extra(char item)
+{
+  if (item == '(')
+    return 1;
+  else if (item == ')')
+    return 1;
+  else if (item == ';')
+    return 1;
+  else if (item == '{')
+    return 1;
+  else if (item == '}')
+    return 1;
+  else
+    return 0;
+}
+
+//  Converts an array ast to an ast using struct
 void array_ast_to_ast(parse_tree_element *tree, Node *root, int id)
 {
   // puts("---");
@@ -183,52 +210,210 @@ void array_ast_to_ast(parse_tree_element *tree, Node *root, int id)
     {
       // printf("[%c] Nao e uma producao\n", tree[i].value);
       // printf("[%c] foi inserido como filho de [%c] de id [%d]\n", tree[i].value, root->data, root->id);
-      // Cria o elemento
-      Node *child = create_node(tree[i].value, tree[i].id);
-      Node *clone = create_node(tree[i].value, tree[i].id);
-      clone->posorder = 1;
-      // Insere o elemento
-      insert_node(root, child);
-      // Clone para pós ordem
-      insert_node(child, clone);
+
+      if (!is_extra(tree[i].value))
+      {
+        // Cria o elemento
+        Node *child = create_node(tree[i].value, tree[i].id);
+        // Insere o elemento
+        insert_node(root, child);
+        // Node *clone = create_node(tree[i].value, tree[i].id);
+        // clone->posorder = 1;
+        // // Clone para pós ordem
+        // insert_node(child, clone);
+      }
     }
   } while (tree[i].id + 1 == tree[++i].id);
 }
 
-int is_extra(char item)
+NodeBinary *create_node_at()
 {
-  if (item == '(')
-    return 1;
-  else if (item == ')')
-    return 1;
-  else if (item == ';')
-    return 1;
-  else if (item == '=')
-    return 1;
-  else if (item == 'r')
-    return 1;
-  else if (item == '{')
-    return 1;
-  else if (item == '}')
-    return 1;
-  else
-    return 0;
+  // Allocate memory for the new node
+  NodeBinary *node = calloc(1, sizeof(NodeBinary));
+
+  node->right = NULL;
+  node->left = NULL;
+
+  return node;
 }
-// percorre a arvore em pós ordem
-void postorder(Node *root)
+
+// Generates de Abstract Tree
+NodeBinary *generate_at(Node *root)
+{
+  /*
+   * p1: S → M
+   * p2: S -> G M
+   * p3: S -> F G M
+   * p4: F → f(){ C; r(E); }
+   * p5: G → g(){ C; r(E); }
+   * p6: M → m(){ C; r(E); }
+   * p7: E → 0
+   * p7: E -> 1
+   * p9: E -> x
+   * p10: E -> y
+   * p11: E -> (EXE)
+   * p12: X → +
+   * p13: X -> -
+   * p14: X -> *
+   * p15: X -> /
+   * p16: C → h=E
+   * p17: C -> i=E
+   * p18: C -> j=E
+   * p19: C -> k=E
+   * p20: C -> z=E
+   * p21: C -> (EXE)
+   * p22: C -> w(E){ C; }
+   * p23: C -> f(E){ C; }
+   * p24: C -> o(E; E; E){ C; }
+   */
+  if (root == NULL)
+    return NULL;
+
+  NodeBinary *at = create_node_at();
+
+  switch (root->data)
+  {
+  case 'S':
+    at->data = root->children[0]->data;
+    at->id = root->children[0]->id;
+    // printf("A raiz e [%c]\n", at->data);
+    at->left = generate_at(root->children[1]);
+    // printf("Esquerda e [%c]\n", at->left->data);
+    at->right = generate_at(root->children[2]);
+    // printf("Direita e [%c]\n", at->right->data);
+    // Tratamento para o próximo filho que é r e não gera nada
+    // porem tem um E como filho
+    at->right->right = generate_at(root->children[3]);
+    // printf("Direita direita e [%c]\n", at->right->right->data);
+    break;
+
+  case 'E':
+    /*
+     * p7: E → 0
+     * p7: E -> 1
+     * p9: E -> x
+     * p10: E -> y
+     * p11: E -> (EXE)
+     */
+    if (root->num_children == 1)
+    {
+      at->data = root->children[0]->data;
+      at->id = root->children[0]->id;
+      // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
+    }
+    else
+    {
+      // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
+      at->data = root->children[1]->children[0]->data;
+      at->id = root->children[1]->children[0]->id;
+      at->right = generate_at(root->children[2]);
+      at->left = generate_at(root->children[0]);
+    }
+    break;
+
+  case 'X':
+    /*
+     * p12: X → +
+     * p13: X -> -
+     * p14: X -> *
+     * p15: X -> /
+     */
+    at->data = root->children[0]->data;
+    at->id = root->children[0]->id;
+    // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
+    break;
+
+  case 'C':
+    /*
+     * p16: C → h=E
+     * p17: C -> i=E
+     * p18: C -> j=E
+     * p19: C -> k=E
+     * p20: C -> z=E
+     * p21: C -> (EXE)
+     * p22: C -> w(E){ C; }
+     * p23: C -> f(E){ C; }
+     * p24: C -> o(E; E; E){ C; }
+     */
+    if (root->children[0]->data == 'f')
+    {
+    }
+    else if (root->children[0]->data == 'w')
+    {
+    }
+    else if (root->children[0]->data == 'o')
+    {
+    }
+    else if (root->children[1]->data == '=')
+    {
+      // Pai é =
+      at->data = root->children[1]->data;
+      at->id = root->children[1]->id;
+      // Filho é h i j k z
+      at->left = create_node_at();
+      at->left->data = root->children[0]->data;
+      at->left->id = root->children[0]->id;
+      // Retorna a subarvore da produção E
+      at->right = generate_at(root->children[2]);
+      // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
+      // printf("O filho esquerdo de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->left->data, at->left->id);
+      // printf("O filho direito de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->right->data, at->right->id);
+    }
+    else if (root->children[1]->data == 'X')
+    {
+      at->data = root->children[1]->children[0]->data;
+      at->id = root->children[1]->children[0]->id;
+      at->right = generate_at(root->children[2]);
+      at->left = generate_at(root->children[0]);
+      // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
+      // printf("O filho esquerdo de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->left->data, at->left->id);
+      // printf("O filho direito de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->right->data, at->right->id);
+    }
+    break;
+
+  case 'r':
+    at->data = root->data;
+    at->id = root->id;
+    break;
+  default:
+    break;
+  }
+
+  if (!at->data)
+  {
+    free(at);
+    return NULL;
+  }
+  return at;
+}
+
+void print_inorder(NodeBinary *root)
+{
+  if (root == NULL)
+    return;
+  print_inorder(root->left);
+  printf("Data [%c] \t Id [%d] \n", root->data, root->id);
+  print_inorder(root->right);
+}
+
+void print_preorder(NodeBinary *root)
+{
+  if (root == NULL)
+    return;
+  printf("Data [%c] \t Id [%d] \n", root->data, root->id);
+  print_preorder(root->left);
+  print_preorder(root->right);
+}
+
+void print_postorder(NodeBinary *root)
 {
   if (root == NULL)
   {
     return;
   }
-
-  for (int i = 0; i < root->num_children; i++)
-  {
-    postorder(root->children[i]);
-  }
-
-  if ((!isupper(root->data) || !is_extra(root->data)) && root->posorder)
-    printf("%c ", root->data);
+  print_postorder(root->left);
+  print_postorder(root->right);
+  printf("Data [%c] \t Id [%d] \n", root->data, root->id);
 }
 
 int main()
@@ -241,12 +426,14 @@ int main()
   // Transforma a arvore em array para arvore normal
   array_ast_to_ast(tree, root, 1);
   // Printa arvore
-  // print_nary_tree(root);
-  postorder(root);
-  // char element = '/';
-  // Node *result = search(root, element);
-  // if (result)
-  // {
-  //   printf("Found element: [%c] with Id: [%d]", element, result->id);
-  // }
+  print_nary_tree(root);
+  // puts("Okay");
+  NodeBinary *at = generate_at(root);
+  // puts("Done");
+  puts("Inorder");
+  print_inorder(at);
+  puts("Posorder");
+  print_postorder(at);
+  puts("preorder");
+  print_preorder(at);
 }

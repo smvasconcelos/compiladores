@@ -376,6 +376,7 @@ int p5_p11(char token)
     print_state(1, token);
     pop();
     push('0');
+    set_tree_state("0\0");
     return 1;
   }
   else if (token == '1' && STACK[TOP] == 'E')
