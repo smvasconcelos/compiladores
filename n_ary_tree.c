@@ -337,12 +337,37 @@ NodeBinary *generate_at(Node *root)
      */
     if (root->children[0]->data == 'f')
     {
+      // Pai é f
+      at->data = root->children[0]->data;
+      at->id = root->children[0]->id;
+      // Retorna a subarvore da produção C
+      at->left = generate_at(root->children[1]);
+      // Retorna a subarvore da produção E
+      at->right = generate_at(root->children[2]);
     }
     else if (root->children[0]->data == 'w')
     {
+      // Pai é o
+      at->data = root->children[0]->data;
+      at->id = root->children[0]->id;
+      // Retorna a subarvore da produção E
+      at->left = generate_at(root->children[1]);
+      // Retorna a subarvore da produção C
+      at->right = generate_at(root->children[2]);
     }
     else if (root->children[0]->data == 'o')
     {
+      // Pai é o
+      at->data = root->children[0]->data;
+      at->id = root->children[0]->id;
+      // Retorna a subarvore da produção E1
+      at->left = generate_at(root->children[1]);
+      // Retorna a subarvore da produção E2
+      at->right = generate_at(root->children[2]);
+      // Retorna a subarvore da produção E3
+      at->right->right = generate_at(root->children[3]);
+      // Retorna a subarvore da produção C
+      at->right->right->right = generate_at(root->children[4]);
     }
     else if (root->children[1]->data == '=')
     {
@@ -355,9 +380,6 @@ NodeBinary *generate_at(Node *root)
       at->left->id = root->children[0]->id;
       // Retorna a subarvore da produção E
       at->right = generate_at(root->children[2]);
-      // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
-      // printf("O filho esquerdo de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->left->data, at->left->id);
-      // printf("O filho direito de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->right->data, at->right->id);
     }
     else if (root->children[1]->data == 'X')
     {
@@ -365,9 +387,6 @@ NodeBinary *generate_at(Node *root)
       at->id = root->children[1]->children[0]->id;
       at->right = generate_at(root->children[2]);
       at->left = generate_at(root->children[0]);
-      // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
-      // printf("O filho esquerdo de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->left->data, at->left->id);
-      // printf("O filho direito de [%c] [%d] e [%c] [%d]\n", at->data, at->id, at->right->data, at->right->id);
     }
     break;
 
@@ -427,9 +446,9 @@ int main()
   array_ast_to_ast(tree, root, 1);
   // Printa arvore
   print_nary_tree(root);
-  // puts("Okay");
+  puts("Okay");
   NodeBinary *at = generate_at(root);
-  // puts("Done");
+  puts("Done");
   puts("Inorder");
   print_inorder(at);
   puts("Posorder");
