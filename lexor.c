@@ -12,79 +12,88 @@
  * Produções
  * p1: S → M
  * p2: S -> G M
- * p3: S -> F G M
- * p4: F → f(){ C; r(E); }
- * p5: G → g(){ C; r(E); }
- * p6: M → m(){ C; r(E); }
- * p7: E → 0
- * p7: E -> 1
- * p9: E -> x
- * p10: E -> y
- * p11: E -> (EXE)
- * p12: X → +
- * p13: X -> -
- * p14: X -> *
- * p15: X -> /
- * p16: C → h=E
- * p17: C -> i=E
- * p18: C -> j=E
- * p19: C -> k=E
- * p20: C -> z=E
- * p21: C -> (EXE)
- * p22: C -> w(E){ C; }
- * p23: C -> f(E){ C; }
- * p24: C -> o(E; E; E){ C; }
+ * p3: S -> N G M
+ * p4: N → n(){ A; r(E); }
+ * p5: G → g(){ A; r(E); }
+ * p6: M → m(){ A; r(E); }
+ * p7: A → CB
+ * p8: B -> .
+ * p9: B -> ;CB
+ * p10: E → 0
+ * p11: E -> 1
+ * p12: E -> x
+ * p13: E -> y
+ * p14: E -> (EXE)
+ * p15: X → +
+ * p16: X -> -
+ * p17: X -> *
+ * p18: X -> /
+ * p19: C → h=g()
+ * p20: C -> i=n()
+ * p21: C -> j=E
+ * p22: C -> k=E
+ * p23: C -> z=E
+ * p24: C -> (EXE)
+ * p25: C -> w(E){ CD
+ * p26: C -> f(E){ CD
+ * p27: C -> o(E; E; E){ CD
+ * p28: D -> } | ;CD
  * Transições:
  * t0: (e, e, S)
  * t1: (e, S, M)
  * t2: (e, S, GM)
- * t3: (e, S, FGM)
- * t4: (e, F, f(){ C; r(E); })
- * t5: (e, G, g(){ C; r(E); })
- * t6: (e, M, m(){ C; r(E); })
- * t7: (e, E, 0)
- * t8: (e, E, 1)
- * t9: (e, E, x)
- * t10: (e, E, y)
- * t11: (e, E, (EXE))
- * t12: (e, X, +)
- * t13: (e, X, -)
- * t14: (e, X, *)
- * t15: (e, X, /)
- * t16: (e, C, h=E)
- * t17: (e, C, i=E)
- * t18: (e, C, j=E)
- * t19: (e, C, k=E)
- * t20: (e, C, z=E)
- * t21: (e, C, (EXE))
- * t22: (e, C, W(E){ C;})
- * t23: (e, C, f(E){ C; })
- * t24: (e, C, o(E; E; E){ C; })
- * t25: (0, 0, e)
- * t26: (1, 1, e)
- * t27: (x, x, e)
- * t28: (y, y, e)
- * t29: ((, (, e)
- * t30: (), ), e)
- * t31: (+, +, e)
- * t32: (-, -, e)
- * t33: (*, *, e)
- * t34: (/, /, e)
- * t35: (h, h, e)
- * t36: (i, i, e)
- * t37: (j, j, e)
- * t38: (k, k, e)
- * t39: (z, z, e)
- * t40: (=, =, e)
- * t41: (w, w, e)
- * t42: ({, {, e)
- * t43: (;, ;, e)
- * t44: (}, }, e)
- * t45: (o, o, e)
- * t46: (f, f, e)
- * t47: (g, g, e)
- * t48: (m, m, e)
- * t49: (r, r, e)
+ * t3: (e, S, NGM)
+ * t4: (e, F, n(){ A; r(E); })
+ * t5: (e, G, g(){ A; r(E); })
+ * t6: (e, M, m(){ A; r(E); })
+ * t7: (e, A, CB)
+ * t8: (e, b, .)
+ * t9: (e, b, ;CB)
+ * t10: (e, E, 0)
+ * t11: (e, E, 1)
+ * t12: (e, E, x)
+ * t13: (e, E, y)
+ * t14: (e, E, (EXE))
+ * t15: (e, X, +)
+ * t16: (e, X, -)
+ * t17: (e, X, *)
+ * t18: (e, X, /)
+ * t19: (e, C, h=E)
+ * t20: (e, C, i=E)
+ * t21: (e, C, j=E)
+ * t22: (e, C, k=E)
+ * t23: (e, C, z=E)
+ * t24: (e, C, (EXE))
+ * t25: (e, C, W(E){ CD)
+ * t26: (e, C, f(E){ CD)
+ * t27: (e, C, o(E; E; E){ CD)
+ * t28: (e, D, })
+ * t29: (e, D, ;CD)
+ * t30: (0, 0, e)
+ * t31: (1, 1, e)
+ * t32: (x, x, e)
+ * t33: (y, y, e)
+ * t34: ((, (, e)
+ * t35: (), ), e)
+ * t36: (+, +, e)
+ * t37: (-, -, e)
+ * t38: (*, *, e)
+ * t39: (/, /, e)
+ * t40: (h, h, e)
+ * t41: (i, i, e)
+ * t42: (j, j, e)
+ * t43: (k, k, e)
+ * t44: (z, z, e)
+ * t45: (=, =, e)
+ * t46: (w, w, e)
+ * t47: ({, {, e)
+ * t48: (;, ;, e)
+ * t49: (}, }, e)
+ * t50: (o, o, e)
+ * t51: (f, f, e)
+ * t52: (g, g, e)
+ * t53: (m, m, e)
+ * t54: (r, r, e)
  */
 #define STACKSIZE 100 // Size of stack
 typedef struct parse_tree
