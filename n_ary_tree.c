@@ -217,10 +217,6 @@ void array_ast_to_ast(parse_tree_element *tree, Node *root, int id)
         Node *child = create_node(tree[i].value, tree[i].id);
         // Insere o elemento
         insert_node(root, child);
-        // Node *clone = create_node(tree[i].value, tree[i].id);
-        // clone->posorder = 1;
-        // // Clone para pós ordem
-        // insert_node(child, clone);
       }
     }
   } while (tree[i].id + 1 == tree[++i].id);
@@ -241,30 +237,36 @@ NodeBinary *create_node_at()
 NodeBinary *generate_at(Node *root)
 {
   /*
+   * Produções
    * p1: S → M
    * p2: S -> G M
-   * p3: S -> F G M
-   * p4: F → f(){ C; r(E); }
-   * p5: G → g(){ C; r(E); }
-   * p6: M → m(){ C; r(E); }
-   * p7: E → 0
-   * p7: E -> 1
-   * p9: E -> x
-   * p10: E -> y
-   * p11: E -> (EXE)
-   * p12: X → +
-   * p13: X -> -
-   * p14: X -> *
-   * p15: X -> /
-   * p16: C → h=E
-   * p17: C -> i=E
-   * p18: C -> j=E
-   * p19: C -> k=E
-   * p20: C -> z=E
-   * p21: C -> (EXE)
-   * p22: C -> w(E){ C; }
-   * p23: C -> f(E){ C; }
-   * p24: C -> o(E; E; E){ C; }
+   * p3: S -> N G M
+   * p4: N → n(){ A; r(E); }
+   * p5: G → g(){ A; r(E); }
+   * p6: M → m(){ A; r(E); }
+   * p7: A → CB
+   * p8: B -> .
+   * p9: B -> ;CB
+   * p10: E → 0
+   * p11: E -> 1
+   * p12: E -> x
+   * p13: E -> y
+   * p14: E -> (EXE)
+   * p15: X → +
+   * p16: X -> -
+   * p17: X -> *
+   * p18: X -> /
+   * p19: C → h=g()
+   * p20: C -> i=n()
+   * p21: C -> j=E
+   * p22: C -> k=E
+   * p23: C -> z=E
+   * p24: C -> (EXE)
+   * p25: C -> w(E){ CD
+   * p26: C -> f(E){ CD
+   * p27: C -> o(E; E; E){ CD
+   * p28: D -> }
+   * p29: D -> ;CD
    */
   if (root == NULL)
     return NULL;

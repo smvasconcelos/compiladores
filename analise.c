@@ -85,7 +85,7 @@ int TOKEN_POS = -1;
 // File pointer
 FILE *file;
 char token = '\0';
-char * WORD = NULL;
+char WORD[1024];
 int LINE = 0;
 int COL = 0;
 int VALUE[500];
@@ -141,15 +141,18 @@ int main(int argc, char *argv[])
 		strcpy(CLASS['r'], "keyword");
 		strcpy(CLASS['o'], "keyword");
 		strcpy(CLASS['w'], "keyword");
-		strcpy(CLASS['x'], "varible");
-		strcpy(CLASS['y'], "variable");
-		strcpy(CLASS['('], "special symbol");
-		strcpy(CLASS[')'], "special symbol");
-		strcpy(CLASS['{'], "special symbol");
-		strcpy(CLASS['}'], "special symbol");
-		strcpy(CLASS[';'], "separator");
-		strcpy(CLASS[' '], "separator");
-		strcpy(CLASS['\n'], "separator");
+    strcpy(CLASS['h'], "varible");
+    strcpy(CLASS['i'], "varible");
+    strcpy(CLASS['z'], "varible");
+    strcpy(CLASS['x'], "varible");
+    strcpy(CLASS['y'], "variable");
+    strcpy(CLASS['('], "special symbol");
+    strcpy(CLASS[')'], "special symbol");
+    strcpy(CLASS['{'], "special symbol");
+    strcpy(CLASS['}'], "special symbol");
+    strcpy(CLASS[';'], "separator");
+    strcpy(CLASS[' '], "separator");
+    strcpy(CLASS['\n'], "separator");
 		strcpy(CLASS['='], "attribution indicator");
 		strcpy(CLASS['+'], "operator");
 		strcpy(CLASS['-'], "operator");
@@ -157,12 +160,18 @@ int main(int argc, char *argv[])
 		strcpy(CLASS['/'], "operator");
 	//
 	file = fopen(argv[1], "r");
-	getline(&WORD, &WORD_LEN, file);
-	lex();
-	M();
-	// G();
-	// N();
-	return 0;
+  // getline(&WORD, &WORD_LEN, file);
+  if (!file)
+  {
+    puts("Insira um caminho de arquivo valido");
+    return 0;
+  }
+  fgets(WORD, WORD_LEN, file);
+  lex();
+  M();
+  // G();
+  // N();
+  return 0;
 }
 
 // p6: M → m(){ C; r(E); }
@@ -187,7 +196,7 @@ int M(){
 								else { erro(++err, 'M', ")");}
 							}//if-(
 							else { erro(++err, 'M', "(");}
-						}//if-r
+						}//if-r 
 						else { erro(++err, 'M', "r");}
 					}//if-;
 					else { erro(++err, 'M', ";");}
