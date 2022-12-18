@@ -97,7 +97,7 @@
  * t54: (r, r, e)
  * t55: (n, n, e)
  */
-#define STACKSIZE 100 // Size of stack
+#define STACKSIZE 1000 // Size of stack
 typedef struct parse_tree
 {
   int id;
@@ -109,7 +109,7 @@ int TREE_N = 0;
 int TREE_MAX_SIZE = 12;
 int PROD_COUNT = 0;
 int PROD_INDEX = 0;
-int PROD_STACK[MAX_TREE_SIZE];
+int PROD_STACK[100];
 
 char WORD[100];
 int WORD_LEN = 100;
@@ -165,7 +165,7 @@ int main(int argc, char *argv[])
   char token;
   file = fopen(argv[1], "r");
   fgets(WORD, WORD_LEN, file);
-  // strcpy(WORD, "m(){f((1+1)){h=0;};r(1);}\n");
+  // strcpy(WORD, "m(){h=x;r(0);}\n");
 
   if (file)
   {
@@ -214,9 +214,9 @@ int main(int argc, char *argv[])
     }
     else
     {
-      puts("*****************************************************************************************************************");
+      puts("***************************************************************************************************************************************************");
       print_state(-1, token == '\n' ? '\0' : token);
-      puts("*****************************************************************************************************************");
+      puts("***************************************************************************************************************************************************");
       puts("\n A palavra nao pode ser consumida.");
     }
   }
@@ -346,7 +346,6 @@ int p1_p6(char token)
     TI = 53;
     print_state(1, token);
     pop();
-    puts("aki");
     TOKEN_POS++;
     return 1;
   }
@@ -400,16 +399,17 @@ int p7_p14(char token)
   // Empilha
   if (STACK[TOP] == 'A')
   {
+
     TI = 7;
     PI = 7;
     print_state(1, token);
     pop();
-    push('C');
     push('B');
+    push('C');
     set_tree_state("CB\0");
-    return p7_p14(token);
   }
-  else if (token == '.' && STACK[TOP] == 'B')
+
+  if (token == '.' && STACK[TOP] == 'B')
   {
     TI = 8;
     PI = 8;
@@ -417,17 +417,19 @@ int p7_p14(char token)
     pop();
     push('.');
     set_tree_state(".\0");
+    return 1;
   }
-  else if (token == ';' && STACK[TOP] == 'C')
+  else if (token == ';' && STACK[TOP] == 'B')
   {
     TI = 9;
     PI = 9;
     print_state(1, token);
     pop();
-    push(';');
-    push('C');
     push('B');
+    push('C');
+    push(';');
     set_tree_state(";CB\0");
+    return 1;
   }
   else if (token == '0' && STACK[TOP] == 'E')
   {
@@ -705,15 +707,14 @@ int p19_p28(char token)
     TI = 25;
     print_state(1, token);
     pop();
-    push('}');
-    push(';');
+    push('D');
     push('C');
     push('{');
     push(')');
     push('E');
     push('(');
     push('w');
-    set_tree_state("w(E){C;}\0");
+    set_tree_state("w(E){D\0");
     return 1;
   }
   else if (token == 'f' && STACK[TOP] == 'C')
@@ -722,15 +723,14 @@ int p19_p28(char token)
     TI = 26;
     print_state(1, token);
     pop();
-    push('}');
-    push(';');
+    push('D');
     push('C');
     push('{');
     push(')');
     push('E');
     push('(');
     push('f');
-    set_tree_state("f(E){C;}\0");
+    set_tree_state("f(E){CD\0");
     return 1;
   }
   else if (token == 'o' && STACK[TOP] == 'C')
@@ -739,8 +739,7 @@ int p19_p28(char token)
     TI = 27;
     print_state(1, token);
     pop();
-    push('}');
-    push(';');
+    push('D');
     push('C');
     push('{');
     push(')');
@@ -751,7 +750,7 @@ int p19_p28(char token)
     push('E');
     push('(');
     push('o');
-    set_tree_state("o(E;E;E){C;}\0");
+    set_tree_state("o(E;E;E){CD\0");
     return 1;
   }
   else if (token == '}' && STACK[TOP] == 'D')
@@ -853,6 +852,8 @@ int consume_extras(char token)
    * }
    * ;
    * =
+   * .
+   * r
    */
 
   if (token == '(' && STACK[TOP] == '(')
@@ -958,12 +959,12 @@ void show()
 
 void set_tree_state(char *word)
 {
-  int local_stack[20];
+  int local_stack[100];
   int index = PROD_STACK[PROD_INDEX];
   int i = 0;
 
   prod_pop();
-  for (i; word[i] *= '\0'; i++)
+  for (i; word[i] == '\0'; i++)
   {
     fflush(stdout);
     setbuf(stdout, NULL);
@@ -982,7 +983,7 @@ void set_tree_state(char *word)
 
   for (i; i >= 0; i--)
   {
-    if (local_stack[i] *= -1)
+    if (local_stack[i] == -1)
     {
       prod_push(local_stack[i]);
     }
