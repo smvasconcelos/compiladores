@@ -276,11 +276,19 @@ NodeBinary *generate_at(Node *root)
   switch (root->data)
   {
   case 'S':
+    /*
+     * p1: S → M
+     * p2: S -> G M
+     * p3: S -> N G M
+     * p4: N → n(){ A; r(E); }
+     * p5: G → g(){ A; r(E); }
+     * p6: M → m(){ A; r(E); }
+     */
     at->data = root->children[0]->data;
     at->id = root->children[0]->id;
     // printf("A raiz e [%c]\n", at->data);
     at->left = generate_at(root->children[1]);
-    // printf("Esquerda e [%c]\n", at->left->data);
+    printf("Esquerda e [%c]\n", at->left->data);
     at->right = generate_at(root->children[2]);
     // printf("Direita e [%c]\n", at->right->data);
     // Tratamento para o próximo filho que é r e não gera nada
@@ -325,17 +333,50 @@ NodeBinary *generate_at(Node *root)
     // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
     break;
 
+  case 'A':
+    // * p7: A → CB
+    at->data = root->data;
+    at->id = root->id;
+    at->left = generate_at(root->children[0]);
+    at->right = generate_at(root->children[1]);
+    break;
+
+  case 'B':
+    /*
+     * p8: B -> .
+     * p9: B -> ;CB
+     */
+    if (root->num_children == 1)
+    {
+      at->data = root->children[0]->data;
+      at->id = root->children[0]->id;
+    }
+    else
+    {
+      for (int i = 0; i < root->num_children; i++)
+      {
+        printf("children {%c}\n", root->children[i]->data);
+      }
+      at->data = root->data;
+      at->id = root->data;
+      at->left = generate_at(root->children[0]);
+      at->right = generate_at(root->children[1]);
+    }
+    break;
+
   case 'C':
     /*
-     * p16: C → h=E
-     * p17: C -> i=E
-     * p18: C -> j=E
-     * p19: C -> k=E
-     * p20: C -> z=E
-     * p21: C -> (EXE)
-     * p22: C -> w(E){ C; }
-     * p23: C -> f(E){ C; }
-     * p24: C -> o(E; E; E){ C; }
+     * p19: C → h=g()
+     * p20: C -> i=n()
+     * p21: C -> j=E
+     * p22: C -> k=E
+     * p23: C -> z=E
+     * p24: C -> (EXE)
+     * p25: C -> w(E){ CD
+     * p26: C -> f(E){ CD
+     * p27: C -> o(E; E; E){ CD
+     * p28: D -> }
+     * p29: D -> ;CD
      */
     if (root->children[0]->data == 'f')
     {
@@ -394,19 +435,19 @@ NodeBinary *generate_at(Node *root)
 
   case 'r':
     at->data = root->data;
-    at->id = root->id;
-    break;
-  default:
-    break;
-  }
+      at->id = root->id;
+      break;
+    default:
+      break;
+    }
 
-  if (!at->data)
-  {
-    free(at);
-    return NULL;
+    if (!at->data)
+    {
+      free(at);
+      return NULL;
+    }
+    return at;
   }
-  return at;
-}
 
 void print_inorder(NodeBinary *root)
 {
