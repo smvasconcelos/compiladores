@@ -310,7 +310,7 @@ int p1_p6(char token)
     set_tree_state("g(){A;r(E);}\0");
     return 1;
   }
-  else if (token == 'f' && STACK[TOP] == 'F')
+  else if (token == 'n' && STACK[TOP] == 'N')
   {
     PI = 4;
     TI = 4;
@@ -327,7 +327,7 @@ int p1_p6(char token)
     push('{');
     push(')');
     push('(');
-    push('f');
+    push('n');
     set_tree_state("n(){A;r(E);}\0");
     return 1;
   }
@@ -714,7 +714,7 @@ int p19_p28(char token)
     push('E');
     push('(');
     push('w');
-    set_tree_state("w(E){D\0");
+    set_tree_state("w(E){CD\0");
     return 1;
   }
   else if (token == 'f' && STACK[TOP] == 'C')
@@ -936,14 +936,14 @@ void pop()
 
 void print_state(int state, char token)
 {
-  // if (PI == 0 && TI == 0)
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
-  // else if (PI == 0 && TI > 0)
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
-  // else if (TI == 0 && PI > 0)
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
-  // else
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
+  if (PI == 0 && TI == 0)
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
+  else if (PI == 0 && TI > 0)
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
+  else if (TI == 0 && PI > 0)
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
+  else
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
 
   PI = 0;
   TI = 0;
@@ -962,7 +962,7 @@ void set_tree_state(char *word)
   int local_stack[100];
   int index = PROD_STACK[PROD_INDEX];
   int i = 0;
-  prod_pop();
+  // prod_pop();
   for (; word[i] != '\0'; i++)
   {
     fflush(stdout);
@@ -974,6 +974,7 @@ void set_tree_state(char *word)
     else
       local_stack[i] = -1;
   }
+  prod_pop();
 
   if (word[1] == '\0')
   {

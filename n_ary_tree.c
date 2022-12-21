@@ -171,6 +171,8 @@ int is_extra(char item)
     return 1;
   else if (item == '}')
     return 1;
+  else if (item == '.')
+    return 1;
   else
     return 0;
 }
@@ -231,6 +233,22 @@ NodeBinary *create_node_at()
   node->left = NULL;
 
   return node;
+}
+
+NodeBinary *get_deepest_node_right(NodeBinary *root)
+{
+  if (root->right == NULL)
+    return root;
+
+  return get_deepest_node_right(root->right);
+}
+
+NodeBinary *get_deepest_node_left(NodeBinary *root)
+{
+  if (root->left == NULL)
+    return root;
+
+  return get_deepest_node_left(root->left);
 }
 
 // Generates de Abstract Tree
@@ -346,17 +364,13 @@ NodeBinary *generate_at(Node *root)
      * p8: B -> .
      * p9: B -> ;CB
      */
-    if (root->num_children == 1)
+    if (root->num_children == 0)
     {
-      at->data = root->children[0]->data;
-      at->id = root->children[0]->id;
+      free(at);
+      return NULL;
     }
     else
     {
-      for (int i = 0; i < root->num_children; i++)
-      {
-        printf("children {%c}\n", root->children[i]->data);
-      }
       at->data = root->data;
       at->id = root->data;
       at->left = generate_at(root->children[0]);
@@ -365,6 +379,8 @@ NodeBinary *generate_at(Node *root)
     break;
 
   case 'C':
+
+    printf("Parent {%c} {%d} \n", root->data, root->id);
     /*
      * p19: C → h=g()
      * p20: C -> i=n()
@@ -380,13 +396,43 @@ NodeBinary *generate_at(Node *root)
      */
     if (root->children[0]->data == 'f')
     {
-      // Pai é f
-      at->data = root->children[0]->data;
-      at->id = root->children[0]->id;
-      // Retorna a subarvore da produção C
-      at->left = generate_at(root->children[1]);
-      // Retorna a subarvore da produção E
-      at->right = generate_at(root->children[2]);
+      if (root->num_children < 3)
+      {
+        // Pai é f
+        at->data = root->children[0]->data;
+        at->id = root->children[0]->id;
+        // Retorna a subarvore da produção E
+        at->left = generate_at(root->children[1]);
+        // Retorna a subarvore da produção C
+        at->right = generate_at(root->children[2]);
+      }
+      else
+      {
+        // Pai é f
+        at->data = root->children[0]->data;
+        at->id = root->children[0]->id;
+        // Retorna a subarvore da produção E
+        at->left = generate_at(root->children[1]);
+        // Retorna a subarvore da produção C
+        at->right = generate_at(root->children[2]);
+
+        NodeBinary *temp = NULL;
+        temp = get_deepest_node_right(at);
+
+        // if (root->num_children > 4)
+        // {
+
+        //   for (int i = 4; i + 1 < root->num_children; i++)
+        //   {
+        //     printf("O filho de [%c] [%d] e [%c] [%d]\n", root->children[i]->data, root->children[i]->id, root->children[i + 1]->data, root->children[i]->id);
+        //     temp->left = generate_at(root->children[i]);
+        //     temp->right = generate_at(root->children[i + 1]);
+        //   }
+        // }
+        temp->right = generate_at(root->children[3]);
+        printf("O filho de [%c] [%d] e temp e [%c] [%d]\n", root->children[3]->data, root->children[3]->id, temp->data, temp->id);
+        printf("Right e [%c] [%d]\n", temp->right->data, temp->right->id);
+      }
     }
     else if (root->children[0]->data == 'w')
     {
@@ -412,6 +458,20 @@ NodeBinary *generate_at(Node *root)
       // Retorna a subarvore da produção C
       at->right->right->right = generate_at(root->children[4]);
     }
+    else if (root->children[0]->data == 'h' || root->children[0]->data == 'i')
+    {
+      // Pai é =
+      at->data = root->children[1]->data;
+      at->id = root->children[1]->id;
+      // Filho é h i
+      at->left = create_node_at();
+      at->left->data = root->children[0]->data;
+      at->left->id = root->children[0]->id;
+      // Filho é g n
+      at->right = create_node_at();
+      at->right->data = root->children[2]->data;
+      at->right->id = root->children[2]->id;
+    }
     else if (root->children[1]->data == '=')
     {
       // Pai é =
@@ -433,21 +493,39 @@ NodeBinary *generate_at(Node *root)
     }
     break;
 
-  case 'r':
-    at->data = root->data;
-      at->id = root->id;
-      break;
-    default:
-      break;
-    }
-
-    if (!at->data)
+  case 'D':
+    if (root->num_children == 0)
     {
       free(at);
       return NULL;
+      // Pai é }
     }
-    return at;
+    else
+    {
+      // Pai é D
+      at->data = root->data;
+      at->id = root->id;
+      printf("O filho de [%c] [%d] e root e [%c] [%d]\n", root->children[0]->data, root->children[0]->id, root->data, root->id);
+      at->left = generate_at(root->children[0]);
+      at->right = generate_at(root->children[1]);
+    }
+    break;
+
+  case 'r':
+    at->data = root->data;
+    at->id = root->id;
+    break;
+
+  default:
+    break;
   }
+  if (!at->data)
+  {
+    free(at);
+    return NULL;
+  }
+  return at;
+}
 
 void print_inorder(NodeBinary *root)
 {
