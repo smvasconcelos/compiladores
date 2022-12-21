@@ -458,6 +458,64 @@ void print_postorder(NodeBinary *root)
   printf("Data [%c] \t Id [%d] \n", root->data, root->id);
 }
 
+void serialize_tree(NodeBinary *root, FILE *fp)
+{
+  fprintf(fp, "%c %d ", root->data, root->id);
+
+  if (root->left)
+  {
+    fputc('L', fp);
+    serialize_tree(root->left, fp);
+  }
+  else
+  {
+    fputc('N', fp);
+  }
+
+  if (root->right)
+  {
+    fputc('R', fp);
+    serialize_tree(root->right, fp);
+  }
+  else
+  {
+    fputc('N', fp);
+  }
+}
+
+NodeBinary *deserialize_tree(FILE *fp)
+{
+  char data;
+  int id;
+  int itemsRead = fscanf(fp, "%c %d ", &data, &id);
+
+  if (itemsRead != 2)
+  {
+    return NULL;
+  }
+
+  NodeBinary *node = malloc(sizeof(NodeBinary));
+  node->data = data;
+  node->id = id;
+  node->left = NULL;
+  node->right = NULL;
+
+  char c;
+  itemsRead = fscanf(fp, " %c", &c);
+  if (itemsRead == 1 && c == 'L')
+  {
+    node->left = deserialize_tree(fp);
+  }
+
+  itemsRead = fscanf(fp, " %c", &c);
+  if (itemsRead == 1 && c == 'R')
+  {
+    node->right = deserialize_tree(fp);
+  }
+
+  return node;
+}
+
 int main(int argc, char *argv[])
 {
 
@@ -474,14 +532,22 @@ int main(int argc, char *argv[])
 
   NodeBinary *at = generate_at(root);
 
+  FILE *tree_file = fopen("ab_tree.txt", "w+");
+  serialize_tree(at, tree_file);
+  fclose(tree_file);
+
+  FILE *r_tree_file = fopen("ab_tree.txt", "r");
+  NodeBinary *new_at = deserialize_tree(r_tree_file);
+  fclose(r_tree_file);
+
   puts("Arvore de Sintaxe Abstrata");
 
   puts("Inorder");
-  print_inorder(at);
+  print_inorder(new_at);
 
   puts("Posorder");
-  print_postorder(at);
+  print_postorder(new_at);
 
   puts("preorder");
-  print_preorder(at);
+  print_preorder(new_at);
 }
