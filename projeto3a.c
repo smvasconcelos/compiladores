@@ -244,7 +244,6 @@ NodeBinary *generate_at(Node *root)
     at->data = root->children[0]->data;
     at->id = root->children[0]->id;
     at->left = generate_at(root->children[1]);
-    printf("Esquerda e [%c]\n", at->left->data);
     at->right = generate_at(root->children[2]);
     // Tratamento para o próximo filho que é r e não gera nada
     // porem tem um E como filho
@@ -315,7 +314,6 @@ NodeBinary *generate_at(Node *root)
 
   case 'C':
 
-    // printf("Parent {%c} {%d} \n", root->data, root->id);
     /*
      * p19: C → h=g()
      * p20: C -> i=n()
