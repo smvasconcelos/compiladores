@@ -180,14 +180,10 @@ int is_extra(char item)
 //  Converts an array ast to an ast using struct
 void array_ast_to_ast(parse_tree_element *tree, Node *root, int id)
 {
-  // puts("---");
-  // printf("Analisando o char [%c] de Id: [%d];\n", tree[id].value, tree[id].id);
-  // puts("---");
   int i = id;
   do
   {
     // Se for uma produção
-    printf("[%c] E uma producao [%d] ID da producao\n", tree[i].value, tree[i].id);
     if (isupper(tree[i].value))
     {
       // Cria o elemento pai
@@ -198,21 +194,11 @@ void array_ast_to_ast(parse_tree_element *tree, Node *root, int id)
       int first_child = get_item_pos(tree, 12 * tree[i].id + 1);
       // Se tiver pelo menos um filho repete o processo pros filhos
       if (first_child >= 0)
-      {
-        // printf("[%c] E uma producao e ", tree[i].value);
-        // printf("[%c] Tem filho na posicao [%d] do array\n", tree[i].value, first_child);
         // Gera a arvore pros filhos da produção gerada
         array_ast_to_ast(tree, newElement, first_child);
-      }
-      // else
-      // {
-      // }
     }
     else
     {
-      // printf("[%c] Nao e uma producao\n", tree[i].value);
-      // printf("[%c] foi inserido como filho de [%c] de id [%d]\n", tree[i].value, root->data, root->id);
-
       if (!is_extra(tree[i].value))
       {
         // Cria o elemento
@@ -404,9 +390,9 @@ NodeBinary *generate_at(Node *root)
       // Retorna a subarvore da produção C
       at->right = generate_at(root->children[2]);
 
-      // NodeBinary *temp = NULL;
-      // temp = get_deepest_node_right(at);
-      at->right->right->right = generate_at(root->children[3]);
+      NodeBinary *temp = NULL;
+      temp = get_deepest_node_right(at);
+      temp->right = generate_at(root->children[3]);
       //   printf("O filho de [%c] [%d] e temp e [%c] [%d]\n", root->children[3]->data, root->children[3]->id, temp->data, temp->id);
       //   printf("Right e [%c] [%d]\n", temp->right->data, temp->right->id);
     }
@@ -419,11 +405,13 @@ NodeBinary *generate_at(Node *root)
       at->left = generate_at(root->children[1]);
       // Retorna a subarvore da produção E2
       at->right = generate_at(root->children[2]);
+
+      NodeBinary *temp = NULL;
+      temp = get_deepest_node_right(at);
       // Retorna a subarvore da produção E3
-      at->right->left = generate_at(root->children[3]);
+      temp->left = generate_at(root->children[3]);
       // Retorna a subarvore da produção C
-      at->right->right = generate_at(root->children[4]);
-      at->right->right->right = generate_at(root->children[4]);
+      temp->right = generate_at(root->children[4]);
     }
     else if (root->children[0]->data == 'h' || root->children[0]->data == 'i')
     {
