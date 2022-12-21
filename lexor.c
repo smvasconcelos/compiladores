@@ -372,24 +372,15 @@ int p1_p6(char token)
 int p7_p14(char token)
 {
   /*
-    * p7: A → CB
-    * p8: B -> .
-    * p9: B -> ;CB
-    * p10: E → 0
-    * p11: E -> 1
-    * p12: E -> x
-    * p13: E -> y
-    * p14: E -> (EXE)
-    ---------------------
-    * t7: (e, A, CB)
-    * t8: (e, b, .)
-    * t9: (e, b, ;CB)
-    * t10: (e, E, 0)
-    * t11: (e, E, 1)
-    * t12: (e, E, x)
-    * t13: (e, E, y)
-    * t14: (e, E, (EXE))
-  */
+   * p7: A → CB
+   * p8: B -> .
+   * p9: B -> ;CB
+   * p10: E → 0
+   * p11: E -> 1
+   * p12: E -> x
+   * p13: E -> y
+   * p14: E -> (EXE)
+   */
 
   /*
      if A -> EMPILHA CB
@@ -935,14 +926,14 @@ void pop()
 
 void print_state(int state, char token)
 {
-  // if (PI == 0 && TI == 0)
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
-  // else if (PI == 0 && TI > 0)
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
-  // else if (TI == 0 && PI > 0)
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
-  // else
-  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
+  if (PI == 0 && TI == 0)
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
+  else if (PI == 0 && TI > 0)
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
+  else if (TI == 0 && PI > 0)
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
+  else
+    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
 
   PI = 0;
   TI = 0;
