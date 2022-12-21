@@ -334,15 +334,15 @@ NodeBinary *generate_at(Node *root)
      */
     at->data = root->children[0]->data;
     at->id = root->children[0]->id;
-    // printf("O filho de [%c] [%d] e [%c] [%d]\n", root->data, root->id, at->data, at->id);
     break;
 
   case 'A':
     // * p7: A → CB
-    at->data = root->data;
-    at->id = root->id;
-    at->left = generate_at(root->children[0]);
-    at->right = generate_at(root->children[1]);
+    free(at);
+    at = generate_at(root->children[0]);
+
+    NodeBinary *temp = get_deepest_node_right(at);
+    temp->right = generate_at(root->children[1]);
     break;
 
   case 'B':
@@ -357,10 +357,11 @@ NodeBinary *generate_at(Node *root)
     }
     else
     {
-      at->data = root->data;
-      at->id = root->data;
-      at->left = generate_at(root->children[0]);
-      at->right = generate_at(root->children[1]);
+      free(at);
+      at = generate_at(root->children[0]);
+
+      NodeBinary *temp = get_deepest_node_right(at);
+      temp->right = generate_at(root->children[1]);
     }
     break;
 
@@ -412,6 +413,10 @@ NodeBinary *generate_at(Node *root)
       temp->left = generate_at(root->children[3]);
       // Retorna a subarvore da produção C
       temp->right = generate_at(root->children[4]);
+
+      NodeBinary *temp2 = NULL;
+      temp2 = get_deepest_node_right(temp);
+      temp2->right = generate_at(root->children[5]);
     }
     else if (root->children[0]->data == 'h' || root->children[0]->data == 'i')
     {
@@ -456,12 +461,11 @@ NodeBinary *generate_at(Node *root)
     }
     else
     {
-      // Pai é D
-      at->data = root->data;
-      at->id = root->id;
-      // printf("O filho de [%c] [%d] e root e [%c] [%d]\n", root->children[0]->data, root->children[0]->id, root->data, root->id);
-      at->left = generate_at(root->children[0]);
-      at->right = generate_at(root->children[1]);
+      free(at);
+      at = generate_at(root->children[0]);
+
+      NodeBinary *temp = get_deepest_node_right(at);
+      temp->right = generate_at(root->children[1]);
     }
     break;
 
