@@ -853,7 +853,6 @@ int consume_extras(char token)
    * ;
    * =
    * .
-   * r
    */
 
   if (token == '(' && STACK[TOP] == '(')
@@ -936,14 +935,14 @@ void pop()
 
 void print_state(int state, char token)
 {
-  if (PI == 0 && TI == 0)
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
-  else if (PI == 0 && TI > 0)
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
-  else if (TI == 0 && PI > 0)
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
-  else
-    printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
+  // if (PI == 0 && TI == 0)
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: - \t\t Word: %s", STEP, state, token, STACK, WORD);
+  // else if (PI == 0 && TI > 0)
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: - \t\t ti: t%2d \t Word: %s", STEP, state, token, STACK, TI, WORD);
+  // else if (TI == 0 && PI > 0)
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: - \t\t Word: %s", STEP, state, token, STACK, PI, WORD);
+  // else
+  //   printf("Step: %2d \t Estado: q%3d \t Token: %5c \t Stack: %20s \t\t pi: p%2d \t ti: t%2d \t Word: %s", STEP, state, token, STACK, PI, TI, WORD);
 
   PI = 0;
   TI = 0;
@@ -962,26 +961,34 @@ void set_tree_state(char *word)
   int local_stack[100];
   int index = PROD_STACK[PROD_INDEX];
   int i = 0;
-  // prod_pop();
+  int add_prod = 0;
+  // for (int i = 0; i <= PROD_INDEX; i++)
+  // {
+  //   printf("Prod {%d} Prod Index {%d} Index {%d} Word {%s}\n", PROD_STACK[i], i, index, word);
+  // }
+  // puts("--------------------------------------------------------------------------------");
+  prod_pop();
+
+  // printf("Producao {%d} Prod Index {%d} Word {%s}\n", index, PROD_INDEX, word);
   for (; word[i] != '\0'; i++)
   {
-    fflush(stdout);
-    setbuf(stdout, NULL);
     TREE[TREE_N].value = word[i];
     TREE[TREE_N++].id = 12 * index + i + 1;
     if (isupper(word[i]))
+    {
+      add_prod = 1;
       local_stack[i] = TREE[TREE_N - 1].id;
+    }
     else
       local_stack[i] = -1;
   }
-  prod_pop();
 
-  if (word[1] == '\0')
+  if (word[1] == '\0' || !add_prod)
   {
     return;
   }
 
-  for (i; i >= 0; i--)
+  for (; i >= 0; i--)
   {
     if (local_stack[i] != -1)
     {
