@@ -352,14 +352,14 @@ NodeBinary *generate_at(Node *root)
       at->right = generate_at(root->children[2]);
 
       NodeBinary *temp = NULL;
-      temp = get_deepest_node_right(at);
+      temp = get_deepest_node_right(at->right);
       // Retorna a subarvore da produção E3
       temp->left = generate_at(root->children[3]);
       // Retorna a subarvore da produção C
       temp->right = generate_at(root->children[4]);
 
       NodeBinary *temp2 = NULL;
-      temp2 = get_deepest_node_right(temp);
+      temp2 = get_deepest_node_right(temp->right);
       temp2->right = generate_at(root->children[5]);
     }
     else if (root->children[0]->data == 'h' || root->children[0]->data == 'i')
@@ -540,14 +540,14 @@ int ASA2ASA()
   NodeBinary *new_at = deserialize_tree(r_tree_file_ASA);
   fclose(r_tree_file_ASA);
 
-  puts("Arvore de Sintaxe Abstrata");
+  // puts("Arvore de Sintaxe Abstrata");
 
-  puts("Inorder");
-  print_inorder(new_at);
+  // puts("Inorder");
+  // print_inorder(new_at);
 
-  puts("Posorder");
-  print_postorder(new_at);
+  // puts("Posorder");
+  // print_postorder(new_at);
 
-  puts("preorder");
-  print_preorder(new_at);
+  // puts("preorder");
+  // print_preorder(new_at);
 }

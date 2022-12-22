@@ -27,7 +27,7 @@ int ASA2ASAP()
   FILE *tree_file_ASAP = fopen("ab_tree.txt", "r");
   NodeBinary *root = deserialize_tree(tree_file_ASAP);
 
-  printf("Polonesa Reversa: ");
+  printf("Polonesa Reversa: \n");
   print_preorder(root);
   printf("\n");
   printf("Polonesa: ");
