@@ -123,11 +123,11 @@ void show();
 // Lida com as produções p1 à p5
 int p1_p6(char);
 // Lida com as produções p6 à p11
-int p5_p11(char);
+int p7_p14(char);
 // Lida com as produções p12 à p15
 int p12_p15(char);
 // Lida com as produções p16 à p24
-int p16_p24(char);
+int p19_p28(char);
 // Lida com as transições dos () {} ; =
 int consume_extras(char);
 // Printa o estado da executação
@@ -144,7 +144,9 @@ void prod_pop();
 void show_tree();
 void update_prods(int);
 void record_tree();
-void generate_compact_tree();
+int ASA2ASA();
+int ASA2ASAP();
+int parser();
 
 /*
  * Para executar o programa é necessário passar o nome do arquivo pelo argv saida.exe input.txt
@@ -182,11 +184,11 @@ int main(int argc, char *argv[])
       goto q1;
     else if (p1_p6(token))
       goto q1;
-    else if (p5_p11(token))
+    else if (p7_p14(token))
       goto q1;
     else if (p12_p15(token))
       goto q1;
-    else if (p16_p24(token))
+    else if (p19_p28(token))
       goto q1;
     else
       goto fim;
@@ -200,7 +202,9 @@ int main(int argc, char *argv[])
       puts("\n A palavra foi consumida totalmente.");
       show_tree();
       record_tree();
-      generate_compact_tree();
+      parser();
+      ASA2ASA();
+      ASA2ASAP();
     }
     else
     {
@@ -221,13 +225,13 @@ int main(int argc, char *argv[])
 int p1_p6(char token)
 {
   /*
-  ! p1: S → M
-  ! p2: S -> G M
-  ! p3: S -> F G M
-  ! p4: F → f(){ C; r(E); }
-  ! p5: G → g(){ C; r(E); }
-  ! p6: M → m(){ C; r(E); }
-  */
+   * p1: S → M
+   * p2: S -> G M
+   * p3: S -> N G M
+   * p4: N → n(){ A; r(E); }
+   * p5: G → g(){ A; r(E); }
+   * p6: M → m(){ A; r(E); }
+   */
 
   // Empilha a produção responsável por cada função
   if (token == 'm' && STACK[TOP] == 'S')
@@ -248,16 +252,15 @@ int p1_p6(char token)
     push('G');
     return 1;
   }
-  else if (token == 'f' && STACK[TOP] == 'S')
+  else if (token == 'n' && STACK[TOP] == 'S')
   {
     PI = 3;
     TI = 3;
     print_state(1, token);
     pop();
-    push('F');
+    push('N');
     return 1;
   }
-
   // Consome a produção responsável por cada função
   if (token == 'm' && STACK[TOP] == 'M')
   {
@@ -272,12 +275,12 @@ int p1_p6(char token)
     push('(');
     push('r');
     push(';');
-    push('C');
+    push('A');
     push('{');
     push(')');
     push('(');
     push('m');
-    set_tree_state("m(){C;r(E);}\0");
+    set_tree_state("m(){A;r(E);}\0");
     return 1;
   }
   else if (token == 'g' && STACK[TOP] == 'G')
@@ -293,15 +296,15 @@ int p1_p6(char token)
     push('(');
     push('r');
     push(';');
-    push('C');
+    push('A');
     push('{');
     push(')');
     push('(');
     push('g');
-    set_tree_state("g(){C;r(E);}\0");
+    set_tree_state("g(){A;r(E);}\0");
     return 1;
   }
-  else if (token == 'f' && STACK[TOP] == 'F')
+  else if (token == 'n' && STACK[TOP] == 'N')
   {
     PI = 4;
     TI = 4;
@@ -314,19 +317,19 @@ int p1_p6(char token)
     push('(');
     push('r');
     push(';');
-    push('C');
+    push('A');
     push('{');
     push(')');
     push('(');
-    push('f');
-    set_tree_state("f(){C;r(E);}\0");
+    push('n');
+    set_tree_state("n(){A;r(E);}\0");
     return 1;
   }
 
   // Consome os nomes das funções das funções
-  if (token == 'f' && STACK[TOP] == 'f')
+  if (token == 'n' && STACK[TOP] == 'n')
   {
-    TI = 46;
+    TI = 55;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -334,7 +337,7 @@ int p1_p6(char token)
   }
   else if (token == 'm' && STACK[TOP] == 'm')
   {
-    TI = 48;
+    TI = 53;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -342,7 +345,7 @@ int p1_p6(char token)
   }
   else if (token == 'g' && STACK[TOP] == 'g')
   {
-    TI = 47;
+    TI = 52;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -350,7 +353,7 @@ int p1_p6(char token)
   }
   else if (token == 'r' && STACK[TOP] == 'r')
   {
-    TI = 49;
+    TI = 54;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -360,30 +363,73 @@ int p1_p6(char token)
   return 0;
 }
 
-int p5_p11(char token)
+int p7_p14(char token)
 {
   /*
-    ! p7: E → 0
-    ! p7: E -> 1
-    ! p9: E -> x
-    ! p10: E -> y
-    ! p11: E -> (EXE)
-  */
+   * p7: A → CB
+   * p8: B -> .
+   * p9: B -> ;CB
+   * p10: E → 0
+   * p11: E -> 1
+   * p12: E -> x
+   * p13: E -> y
+   * p14: E -> (EXE)
+   */
 
+  /*
+     if A -> EMPILHA CB
+     IF . -> B push . POP
+     if ; -> CB
+  */
   // Empilha
-  if (token == '0' && STACK[TOP] == 'E')
+  if (STACK[TOP] == 'A')
   {
+
     TI = 7;
     PI = 7;
     print_state(1, token);
     pop();
+    push('B');
+    push('C');
+    set_tree_state("CB\0");
+  }
+
+  if (token == '.' && STACK[TOP] == 'B')
+  {
+    TI = 8;
+    PI = 8;
+    print_state(1, token);
+    pop();
+    push('.');
+    set_tree_state(".\0");
+    return 1;
+  }
+  else if (token == ';' && STACK[TOP] == 'B')
+  {
+    TI = 9;
+    PI = 9;
+    print_state(1, token);
+    pop();
+    push('B');
+    push('C');
+    push(';');
+    set_tree_state(";CB\0");
+    return 1;
+  }
+  else if (token == '0' && STACK[TOP] == 'E')
+  {
+    TI = 10;
+    PI = 10;
+    print_state(1, token);
+    pop();
     push('0');
+    set_tree_state("0\0");
     return 1;
   }
   else if (token == '1' && STACK[TOP] == 'E')
   {
-    TI = 8;
-    PI = 8;
+    TI = 11;
+    PI = 11;
     print_state(1, token);
     pop();
     push('1');
@@ -392,8 +438,8 @@ int p5_p11(char token)
   }
   else if (token == 'x' && STACK[TOP] == 'E')
   {
-    TI = 9;
-    PI = 9;
+    TI = 12;
+    PI = 12;
     print_state(1, token);
     pop();
     push('x');
@@ -402,8 +448,8 @@ int p5_p11(char token)
   }
   else if (token == 'y' && STACK[TOP] == 'E')
   {
-    TI = 10;
-    PI = 10;
+    TI = 13;
+    PI = 13;
     print_state(1, token);
     pop();
     push('y');
@@ -412,8 +458,8 @@ int p5_p11(char token)
   }
   else if ((token == '(' && STACK[TOP] == 'E'))
   {
-    TI = 11;
-    PI = 11;
+    TI = 14;
+    PI = 14;
     print_state(1, token);
     pop();
     push(')');
@@ -427,7 +473,7 @@ int p5_p11(char token)
   // Consume
   else if (token == '0' && STACK[TOP] == '0')
   {
-    TI = 25;
+    TI = 30;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -435,7 +481,7 @@ int p5_p11(char token)
   }
   else if (token == '1' && STACK[TOP] == '1')
   {
-    TI = 26;
+    TI = 31;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -443,7 +489,7 @@ int p5_p11(char token)
   }
   else if (token == 'x' && STACK[TOP] == 'x')
   {
-    TI = 27;
+    TI = 32;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -451,7 +497,7 @@ int p5_p11(char token)
   }
   else if (token == 'y' && STACK[TOP] == 'y')
   {
-    TI = 28;
+    TI = 33;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -463,11 +509,11 @@ int p5_p11(char token)
 int p12_p15(char token)
 {
   /*
-    ! p12: X → +
-    ! p13: X -> -
-    ! p14: X -> *
-    ! p15: X -> /
-  */
+   * p12: X → +
+   * p13: X -> -
+   * p14: X -> *
+   * p15: X -> /
+   */
   // Empilha
   if (token == '+' && STACK[TOP] == 'X')
   {
@@ -545,36 +591,40 @@ int p12_p15(char token)
   return 0;
 }
 
-int p16_p24(char token)
+int p19_p28(char token)
 {
   /*
-    ! p16: C → h=E
-    ! p17: C -> i=E
-    ! p18: C -> j=E
-    ! p19: C -> k=E
-    ! p20: C -> z=E
-    ! p21: C -> (EXE)
-    ! p22: C -> w(E){ C; }
-    ! p23: C -> f(E){ C; }
-    ! p24: C -> o(E; E; E){ C; }
-  */
+   * p19: C → h=g()
+   * p20: C -> i=n()
+   * p21: C -> j=E
+   * p22: C -> k=E
+   * p23: C -> z=E
+   * p24: C -> (EXE)
+   * p25: C -> w(E){ CD
+   * p26: C -> f(E){ CD
+   * p27: C -> o(E; E; E){ CD
+   * p28: D -> } | ;CD
+   */
+
   // Empilha
   if (token == 'h' && STACK[TOP] == 'C')
   {
-    PI = 16;
-    TI = 16;
+    PI = 19;
+    TI = 19;
     print_state(1, token);
     pop();
-    push('E');
+    push(')');
+    push('(');
+    push('g');
     push('=');
     push('h');
-    set_tree_state("h=E\0");
+    set_tree_state("h=g()\0");
     return 1;
   }
   else if (token == 'j' && STACK[TOP] == 'C')
   {
-    PI = 18;
-    TI = 18;
+    PI = 21;
+    TI = 21;
     print_state(1, token);
     pop();
     push('E');
@@ -585,20 +635,22 @@ int p16_p24(char token)
   }
   else if (token == 'i' && STACK[TOP] == 'C')
   {
-    PI = 17;
-    TI = 17;
+    PI = 20;
+    TI = 20;
     print_state(1, token);
     pop();
-    push('E');
+    push(')');
+    push('(');
+    push('n');
     push('=');
     push('i');
-    set_tree_state("i=E\0");
+    set_tree_state("i=n()\0");
     return 1;
   }
   else if (token == 'k' && STACK[TOP] == 'C')
   {
-    PI = 19;
-    TI = 19;
+    PI = 22;
+    TI = 22;
     print_state(1, token);
     pop();
     push('E');
@@ -609,8 +661,8 @@ int p16_p24(char token)
   }
   else if (token == 'z' && STACK[TOP] == 'C')
   {
-    PI = 20;
-    TI = 20;
+    PI = 23;
+    TI = 23;
     print_state(1, token);
     pop();
     push('E');
@@ -622,8 +674,8 @@ int p16_p24(char token)
   // p21-p24
   else if (token == '(' && STACK[TOP] == 'C')
   {
-    PI = 21;
-    TI = 21;
+    PI = 24;
+    TI = 24;
     print_state(1, token);
     pop();
     push(')');
@@ -636,46 +688,43 @@ int p16_p24(char token)
   }
   else if (token == 'w' && STACK[TOP] == 'C')
   {
-    PI = 22;
-    TI = 22;
+    PI = 25;
+    TI = 25;
     print_state(1, token);
     pop();
-    push('}');
-    push(';');
+    push('D');
     push('C');
     push('{');
     push(')');
     push('E');
     push('(');
     push('w');
-    set_tree_state("w(E){C;}\0");
+    set_tree_state("w(E){CD\0");
     return 1;
   }
   else if (token == 'f' && STACK[TOP] == 'C')
   {
-    PI = 23;
-    TI = 23;
+    PI = 26;
+    TI = 26;
     print_state(1, token);
     pop();
-    push('}');
-    push(';');
+    push('D');
     push('C');
     push('{');
     push(')');
     push('E');
     push('(');
     push('f');
-    set_tree_state("f(E){C;}\0");
+    set_tree_state("f(E){CD\0");
     return 1;
   }
   else if (token == 'o' && STACK[TOP] == 'C')
   {
-    PI = 24;
-    TI = 24;
+    PI = 27;
+    TI = 27;
     print_state(1, token);
     pop();
-    push('}');
-    push(';');
+    push('D');
     push('C');
     push('{');
     push(')');
@@ -686,27 +735,33 @@ int p16_p24(char token)
     push('E');
     push('(');
     push('o');
-    set_tree_state("o(E;E;E){C;}\0");
+    set_tree_state("o(E;E;E){CD\0");
+    return 1;
+  }
+  else if (token == '}' && STACK[TOP] == 'D')
+  {
+    PI = 28;
+    TI = 28;
+    print_state(1, token);
+    pop();
+    push('}');
+    set_tree_state("}\0");
+    return 1;
+  }
+  else if (token == ';' && STACK[TOP] == 'D')
+  {
+    PI = 29;
+    TI = 29;
+    print_state(1, token);
+    pop();
+    push('D');
+    push('C');
+    push(';');
+    set_tree_state(";CD\0");
     return 1;
   }
   // Consome
   else if (token == 'w' && STACK[TOP] == 'w')
-  {
-    TI = 41;
-    print_state(1, token);
-    pop();
-    TOKEN_POS++;
-    return 1;
-  }
-  else if (token == 'o' && STACK[TOP] == 'o')
-  {
-    TI = 45;
-    print_state(1, token);
-    pop();
-    TOKEN_POS++;
-    return 1;
-  }
-  else if (token == 'f' && STACK[TOP] == 'f')
   {
     TI = 46;
     print_state(1, token);
@@ -714,9 +769,25 @@ int p16_p24(char token)
     TOKEN_POS++;
     return 1;
   }
+  else if (token == 'o' && STACK[TOP] == 'o')
+  {
+    TI = 50;
+    print_state(1, token);
+    pop();
+    TOKEN_POS++;
+    return 1;
+  }
+  else if (token == 'f' && STACK[TOP] == 'f')
+  {
+    TI = 51;
+    print_state(1, token);
+    pop();
+    TOKEN_POS++;
+    return 1;
+  }
   else if (token == 'h' && STACK[TOP] == 'h')
   {
-    TI = 35;
+    TI = 40;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -724,7 +795,7 @@ int p16_p24(char token)
   }
   else if (token == 'j' && STACK[TOP] == 'j')
   {
-    TI = 37;
+    TI = 42;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -732,7 +803,7 @@ int p16_p24(char token)
   }
   else if (token == 'i' && STACK[TOP] == 'i')
   {
-    TI = 36;
+    TI = 41;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -740,7 +811,7 @@ int p16_p24(char token)
   }
   else if (token == 'k' && STACK[TOP] == 'k')
   {
-    TI = 38;
+    TI = 43;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -748,7 +819,7 @@ int p16_p24(char token)
   }
   else if (token == 'z' && STACK[TOP] == 'z')
   {
-    TI = 39;
+    TI = 44;
     print_state(1, token);
     pop();
     TOKEN_POS++;
@@ -760,17 +831,18 @@ int p16_p24(char token)
 int consume_extras(char token)
 {
   /*
-    ! (
-    ! )
-    ! {
-    ! }
-    ! ;
-    ! =
-  */
+   * (
+   * )
+   * {
+   * }
+   * ;
+   * =
+   * .
+   */
 
   if (token == '(' && STACK[TOP] == '(')
   {
-    TI = 29;
+    TI = 34;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -778,7 +850,7 @@ int consume_extras(char token)
   }
   else if (token == ')' && STACK[TOP] == ')')
   {
-    TI = 30;
+    TI = 35;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -786,7 +858,7 @@ int consume_extras(char token)
   }
   else if (token == '{' && STACK[TOP] == '{')
   {
-    TI = 42;
+    TI = 47;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -794,7 +866,7 @@ int consume_extras(char token)
   }
   else if (token == '}' && STACK[TOP] == '}')
   {
-    TI = 44;
+    TI = 49;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -802,7 +874,7 @@ int consume_extras(char token)
   }
   else if (token == 'r' && STACK[TOP] == 'r')
   {
-    TI = 49;
+    TI = 54;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -810,7 +882,7 @@ int consume_extras(char token)
   }
   else if (token == '=' && STACK[TOP] == '=')
   {
-    TI = 40;
+    TI = 45;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -818,7 +890,15 @@ int consume_extras(char token)
   }
   else if (token == ';' && STACK[TOP] == ';')
   {
-    TI = 43;
+    TI = 48;
+    print_state(1, token);
+    TOKEN_POS++;
+    pop();
+    return 1;
+  }
+  else if (token == '.' && STACK[TOP] == '.')
+  {
+    TI = 8;
     print_state(1, token);
     TOKEN_POS++;
     pop();
@@ -863,25 +943,37 @@ void show()
 
 void set_tree_state(char *word)
 {
-  int local_stack[20];
+  int local_stack[100];
   int index = PROD_STACK[PROD_INDEX];
-  prod_pop();
   int i = 0;
+  int add_prod = 0;
+  // for (int i = 0; i <= PROD_INDEX; i++)
+  // {
+  //   printf("Prod {%d} Prod Index {%d} Index {%d} Word {%s}\n", PROD_STACK[i], i, index, word);
+  // }
+  // puts("--------------------------------------------------------------------------------");
+  prod_pop();
 
-  for (i; word[i] != '\0'; i++)
+  // printf("Producao {%d} Prod Index {%d} Word {%s}\n", index, PROD_INDEX, word);
+  for (; word[i] != '\0'; i++)
   {
     TREE[TREE_N].value = word[i];
     TREE[TREE_N++].id = 12 * index + i + 1;
     if (isupper(word[i]))
+    {
+      add_prod = 1;
       local_stack[i] = TREE[TREE_N - 1].id;
+    }
     else
       local_stack[i] = -1;
   }
 
-  if (word[1] == '\0')
+  if (word[1] == '\0' || !add_prod)
+  {
     return;
+  }
 
-  for (i; i >= 0; i--)
+  for (; i >= 0; i--)
   {
     if (local_stack[i] != -1)
     {
@@ -897,7 +989,7 @@ void prod_push(int val)
 
 void prod_pop()
 {
-  PROD_STACK[PROD_INDEX--] = 0;
+  PROD_STACK[PROD_INDEX--] = -1;
 }
 
 void show_tree()
@@ -913,8 +1005,6 @@ void record_tree()
   FILE *output = fopen("tree.txt", "w+");
   for (int i = 0; i < TREE_N; i++)
   {
-    fflush(stdout);
-    setbuf(stdout, NULL);
     fprintf(output, "%c, %d \n", TREE[i].value, TREE[i].id);
   }
   fclose(output);

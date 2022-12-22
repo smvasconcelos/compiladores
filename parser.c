@@ -70,12 +70,12 @@
  * t49: (r, r, e)
  */
 
-int WORD_LEN = 100;
-int TOKEN_POS = -1;
+int TOKEN_LEN = 100;
+int TOKEN_COL = -1;
 // File pointer
-FILE *file;
+FILE *INPUT_FILE;
 char token = '\0';
-char WORD[1024];
+char TOKEN[1024];
 int LINE = 0;
 int COL = 0;
 int VALUE[500];
@@ -97,7 +97,7 @@ int B();
 void lex();
 void table();
 
-int main(int argc, char *argv[])
+int parser()
 {
 
   //
@@ -159,14 +159,14 @@ int main(int argc, char *argv[])
   strcpy(CLASS['*'], "operator");
   strcpy(CLASS['/'], "operator");
   //
-  file = fopen("input.txt", "r");
-  // getline(&WORD, &WORD_LEN, file);
-  if (!file)
+  INPUT_FILE = fopen("input.txt", "r");
+  // getline(&TOKEN, &TOKEN_LEN, INPUT_FILE);
+  if (!INPUT_FILE)
   {
     puts("Insira um caminho de arquivo valido");
     return 0;
   }
-  fgets(WORD, WORD_LEN, file);
+  fgets(TOKEN, TOKEN_LEN, INPUT_FILE);
   lex();
   M();
   // G();
@@ -761,7 +761,7 @@ int D()
 
 void erro(int err, char where, char *expected)
 {
-  COL = TOKEN_POS;
+  COL = TOKEN_COL;
   puts("**************************************************************************************************");
   printf("\tErro: [%d] \t Expressao: '%c' \t Linha: [%d] \t Coluna: [%d]\n", err, where, LINE, COL);
   printf("\tEra esperado ['%s'] \t foi lido ['%c'].\n", expected, token);
@@ -771,12 +771,12 @@ void erro(int err, char where, char *expected)
 
 void lex()
 {
-  token = WORD[++TOKEN_POS];
+  token = TOKEN[++TOKEN_COL];
   table();
 }
 
 void table()
 {
-  COL = TOKEN_POS;
+  COL = TOKEN_COL;
   printf("L: %2d | \t C: %2d |\t Token: %2c |\t Value: %2c |\t\t Class: %2s\n", LINE, COL, token == '\n' ? '-' : token, VALUE[token], CLASS[token]);
 }

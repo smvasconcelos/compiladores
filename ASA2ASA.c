@@ -516,7 +516,7 @@ NodeBinary *deserialize_tree(FILE *fp)
   return node;
 }
 
-int main(int argc, char *argv[])
+int ASA2ASA()
 {
 
   parse_tree_element *tree = (parse_tree_element *)calloc(1024, sizeof(parse_tree_element));
@@ -532,13 +532,13 @@ int main(int argc, char *argv[])
 
   NodeBinary *at = generate_at(root);
 
-  FILE *tree_file = fopen("ab_tree.txt", "w+");
-  serialize_tree(at, tree_file);
-  fclose(tree_file);
+  FILE *tree_file_ASA = fopen("ab_tree.txt", "w+");
+  serialize_tree(at, tree_file_ASA);
+  fclose(tree_file_ASA);
 
-  FILE *r_tree_file = fopen("ab_tree.txt", "r");
-  NodeBinary *new_at = deserialize_tree(r_tree_file);
-  fclose(r_tree_file);
+  FILE *r_tree_file_ASA = fopen("ab_tree.txt", "r");
+  NodeBinary *new_at = deserialize_tree(r_tree_file_ASA);
+  fclose(r_tree_file_ASA);
 
   puts("Arvore de Sintaxe Abstrata");
 
