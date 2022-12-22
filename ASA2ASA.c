@@ -352,14 +352,14 @@ NodeBinary *generate_at(Node *root)
       at->right = generate_at(root->children[2]);
 
       NodeBinary *temp = NULL;
-      temp = get_deepest_node_right(at->right);
+      temp = get_deepest_node_right(at);
       // Retorna a subarvore da produção E3
       temp->left = generate_at(root->children[3]);
       // Retorna a subarvore da produção C
       temp->right = generate_at(root->children[4]);
 
       NodeBinary *temp2 = NULL;
-      temp2 = get_deepest_node_right(temp->right);
+      temp2 = get_deepest_node_right(temp);
       temp2->right = generate_at(root->children[5]);
     }
     else if (root->children[0]->data == 'h' || root->children[0]->data == 'i')
@@ -516,7 +516,7 @@ NodeBinary *deserialize_tree(FILE *fp)
   return node;
 }
 
-int ASA2ASA()
+int ASA2ASA(int argc, char *argv[])
 {
 
   parse_tree_element *tree = (parse_tree_element *)calloc(1024, sizeof(parse_tree_element));
@@ -532,22 +532,22 @@ int ASA2ASA()
 
   NodeBinary *at = generate_at(root);
 
-  FILE *tree_file_ASA = fopen("ab_tree.txt", "w+");
-  serialize_tree(at, tree_file_ASA);
-  fclose(tree_file_ASA);
+  FILE *tree_file = fopen("ab_tree.txt", "w+");
+  serialize_tree(at, tree_file);
+  fclose(tree_file);
 
-  FILE *r_tree_file_ASA = fopen("ab_tree.txt", "r");
-  NodeBinary *new_at = deserialize_tree(r_tree_file_ASA);
-  fclose(r_tree_file_ASA);
+  FILE *r_tree_file = fopen("ab_tree.txt", "r");
+  NodeBinary *new_at = deserialize_tree(r_tree_file);
+  fclose(r_tree_file);
 
-  // puts("Arvore de Sintaxe Abstrata");
+  //   puts("Arvore de Sintaxe Abstrata");
 
-  // puts("Inorder");
-  // print_inorder(new_at);
+  //   puts("Inorder");
+  //   print_inorder(new_at);
 
-  // puts("Posorder");
-  // print_postorder(new_at);
+  //   puts("Posorder");
+  //   print_postorder(new_at);
 
-  // puts("preorder");
-  // print_preorder(new_at);
+  //   puts("preorder");
+  //   print_preorder(new_at);
 }
