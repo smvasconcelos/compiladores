@@ -100,8 +100,8 @@ void table();
 int main(int argc, char *argv[])
 {
 
-	//
-		// Values
+  //
+  // Values
   VALUE['1'] = '1';
   VALUE['0'] = '0';
   VALUE['m'] = '-';
@@ -159,7 +159,7 @@ int main(int argc, char *argv[])
   strcpy(CLASS['*'], "operator");
   strcpy(CLASS['/'], "operator");
   //
-	file = fopen(argv[1], "r");
+  file = fopen("input.txt", "r");
   // getline(&WORD, &WORD_LEN, file);
   if (!file)
   {
@@ -175,12 +175,21 @@ int main(int argc, char *argv[])
 }
 
 // p6: M → m(){ A; r(E); }
-int M(){
-	int err = 0;
-	if(token=='m'){ lex();
-		if(token=='('){ lex();
-			if(token==')'){ lex();
-				if(token=='{'){ lex();
+int M()
+{
+  int err = 0;
+  if (token == 'm')
+  {
+    lex();
+    if (token == '(')
+    {
+      lex();
+      if (token == ')')
+      {
+        lex();
+        if (token == '{')
+        {
+          lex();
           A();
           if (token == ';')
           {
@@ -251,15 +260,24 @@ int M(){
   {
     erro(++err, 'M', "m");
   } // não veio m
-}//end-M
+} // end-M
 
 // p5: G → g(){ A; r(E); }
-int G(){
-	int err = 0;
-	if(token=='g'){ lex();
-		if(token=='('){ lex();
-			if(token==')'){ lex();
-				if(token=='{'){ lex();
+int G()
+{
+  int err = 0;
+  if (token == 'g')
+  {
+    lex();
+    if (token == '(')
+    {
+      lex();
+      if (token == ')')
+      {
+        lex();
+        if (token == '{')
+        {
+          lex();
           A();
           if (token == ';')
           {
@@ -330,15 +348,24 @@ int G(){
   {
     erro(++err, 'G', "g");
   } // não veio m
-}//end-G
+} // end-G
 
 // p5: N → n(){ A; r(E); }
-int N(){
-	int err = 0;
-	if(token=='n'){ lex();
-		if(token=='('){ lex();
-			if(token==')'){ lex();
-				if(token=='{'){ lex();
+int N()
+{
+  int err = 0;
+  if (token == 'n')
+  {
+    lex();
+    if (token == '(')
+    {
+      lex();
+      if (token == ')')
+      {
+        lex();
+        if (token == '{')
+        {
+          lex();
           A();
           if (token == ';')
           {
@@ -409,28 +436,50 @@ int N(){
   {
     erro(++err, 'N', "N");
   } // não veio m
-}//end-N
+} // end-N
 
 // p7: E → 0 | 1 | x | y | (EXE)
-int E(){
-	if (token=='0'|| token=='1'|| token=='x'|| token=='y'){ lex(); }
-	else if (token=='('){
-		lex();
-		E();
-		X();
-		E();
-		if (token==')'){ lex(); }
-		else {erro(1, 'E', ")");}
-	}else {erro(2, 'E', "0 | 1 | x | y | (");}
-	return(0);
-}//end-E
+int E()
+{
+  if (token == '0' || token == '1' || token == 'x' || token == 'y')
+  {
+    lex();
+  }
+  else if (token == '(')
+  {
+    lex();
+    E();
+    X();
+    E();
+    if (token == ')')
+    {
+      lex();
+    }
+    else
+    {
+      erro(1, 'E', ")");
+    }
+  }
+  else
+  {
+    erro(2, 'E', "0 | 1 | x | y | (");
+  }
+  return (0);
+} // end-E
 
-//p12: X → + | - | * | /
-int X(){
-	if (token=='+'|| token=='-'|| token=='*'|| token=='/'){ lex(); }
-	else { erro(1, 'X', "+ | - | * | /"); }
-	return(0);
-}//end
+// p12: X → + | - | * | /
+int X()
+{
+  if (token == '+' || token == '-' || token == '*' || token == '/')
+  {
+    lex();
+  }
+  else
+  {
+    erro(1, 'X', "+ | - | * | /");
+  }
+  return (0);
+} // end
 
 int A()
 {
@@ -459,7 +508,8 @@ int B()
 }
 
 // p16: C → h=E | i=E | j=E | k=E | z=E | (EXE) | w(E){ C; } | f(E){ C; } | o(E; E; E){ C; }
-int C(){
+int C()
+{
   int err = 0;
   if (token == 'j' || token == 'k' || token == 'z')
   {
@@ -569,7 +619,8 @@ int C(){
 }
 
 // p22: W →w(E){ C; }
-int W(){
+int W()
+{
   int err = 0;
   if (token == '(')
   {
@@ -708,24 +759,24 @@ int D()
   return (0);
 }
 
-void erro(int err, char where, char * expected)
+void erro(int err, char where, char *expected)
 {
-	COL = TOKEN_POS;
-	puts("**************************************************************************************************");
-	printf("\tErro: [%d] \t Expressao: '%c' \t Linha: [%d] \t Coluna: [%d]\n", err, where, LINE, COL);
-	printf("\tEra esperado ['%s'] \t foi lido ['%c'].\n", expected, token);
-	puts("**************************************************************************************************");
-	exit(1);
+  COL = TOKEN_POS;
+  puts("**************************************************************************************************");
+  printf("\tErro: [%d] \t Expressao: '%c' \t Linha: [%d] \t Coluna: [%d]\n", err, where, LINE, COL);
+  printf("\tEra esperado ['%s'] \t foi lido ['%c'].\n", expected, token);
+  puts("**************************************************************************************************");
+  exit(1);
 }
 
 void lex()
 {
-	token = WORD[++TOKEN_POS];
-	table();
+  token = WORD[++TOKEN_POS];
+  table();
 }
 
 void table()
 {
-	COL = TOKEN_POS;
-	printf("L: %2d | \t C: %2d |\t Token: %2c |\t Value: %2c |\t\t Class: %2s\n", LINE, COL, token == '\n'? '-' : token, VALUE[token], CLASS[token]);
+  COL = TOKEN_POS;
+  printf("L: %2d | \t C: %2d |\t Token: %2c |\t Value: %2c |\t\t Class: %2s\n", LINE, COL, token == '\n' ? '-' : token, VALUE[token], CLASS[token]);
 }

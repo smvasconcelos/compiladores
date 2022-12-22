@@ -919,8 +919,3 @@ void record_tree()
   }
   fclose(output);
 }
-
-void generate_compact_tree()
-{
-  
-}
